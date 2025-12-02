@@ -80,7 +80,7 @@ export default function CheckoutPage() {
         }
 
         // Auto-login locally
-        if (typeof window !== "undefined") {
+        if (typeof window !== "undefined" && appUserId) {
             localStorage.setItem("app_user_id", appUserId);
         }
       } else {
