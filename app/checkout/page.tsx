@@ -1,18 +1,20 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import { supabase } from "@/supabaseClient";
 import { useCart } from "@/context/CartContext";
-import { useUser } from "@/context/UserContext"; // IMPORT NEW CONTEXT
+import { useUser } from "@/context/UserContext";
 import { CheckCircle, MapPin, Phone, Mail, User, Truck, CreditCard, ShoppingBag } from "lucide-react";
 
-export default function CheckoutPage() {
+// 1. RENAME the main logic component to 'CheckoutContent'
+// This component uses useSearchParams, so it must be wrapped in Suspense
+function CheckoutContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   
   const { items, clearCart, total: cartTotal } = useCart();
-  const { user, refreshUser } = useUser(); // Get user & refresh helper
+  const { user, refreshUser } = useUser(); 
 
   const shippingFee = Number(searchParams.get("shipping")) || 0;
   const discount = Number(searchParams.get("voucher")) || 0;
@@ -80,10 +82,10 @@ export default function CheckoutPage() {
         }
 
         // Auto-login locally
-            // FIX: We check if appUserId exists (is truthy) before saving
-            if (typeof window !== "undefined" && appUserId) {
-                localStorage.setItem("app_user_id", appUserId);
-            }
+        // FIX: Check if appUserId exists before saving to satisfy TypeScript
+        if (typeof window !== "undefined" && appUserId) {
+            localStorage.setItem("app_user_id", appUserId);
+        }
       } else {
           // Already logged in? Update profile with latest address info
           await supabase.from("app_users").update({ 
@@ -143,6 +145,7 @@ export default function CheckoutPage() {
       clearCart();
       router.push(`/order-success?orderId=${order.id}`);
       
+      // Fallback redirect
       setTimeout(() => {
          window.location.href = `/order-success?orderId=${order.id}`; 
       }, 100);
@@ -299,7 +302,7 @@ export default function CheckoutPage() {
                     {items.map((item) => (
                         <div key={item.id} className="flex gap-4">
                             <div className="w-14 h-14 bg-gray-100 rounded-md overflow-hidden shrink-0">
-                                {/* FIX: Add || "" to convert null to an empty string */}
+                                {/* FIX: Add || "" to convert null to an empty string for TypeScript */}
                                 <img 
                                     src={item.image || ""} 
                                     alt={item.title || "Product"}
@@ -382,5 +385,22 @@ export default function CheckoutPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+// 2. EXPORT THE PAGE WRAPPED IN SUSPENSE
+// This fixes the Next.js build error related to useSearchParams
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-[#f8f9fa]">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-black border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-500 font-medium">Loading Checkout...</p>
+        </div>
+      </div>
+    }>
+      <CheckoutContent />
+    </Suspense>
   );
 }
