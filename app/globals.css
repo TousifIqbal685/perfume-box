@@ -1,26 +1,68 @@
-@import "tailwindcss";
+/* 1. IMPORTS MUST BE FIRST */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@100..900&display=swap');
 
+/* 2. TAILWIND DIRECTIVES SECOND */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 3. CUSTOM STYLES */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Colors */
+  --color-background: #F9FAFB; /* Off-White/Light Gray for depth */
+  --color-foreground: #171717; /* Near Black */
+  --color-brand: #C5299B;      /* Deep, Luxurious Pink/Magenta */
+  --color-brand-dark: #A81C82;
+  --color-accent: #E5C300;     /* Subtle Gold Accent */
+
+  /* Typography */
+  --font-serif: 'Playfair Display', serif;
+  --font-sans: 'Inter', sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Base Styles */
+html,
+body {
+  height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Headings use Serif font */
+h1, h2, h3, h4 {
+  font-family: var(--font-serif);
+}
+
+/* --- Tailwind Components / Utilities --- */
+
+/* Global Transitions */
+* {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+/* Custom Focus Ring for accessibility */
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
+  @apply outline-none ring-2 ring-offset-2 ring-[var(--color-brand)] rounded-lg;
+}
+
+/* Container Utilities */
+.container-full {
+  @apply w-full mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.container-wide {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Custom Component: Branded CTA Button */
+.btn-primary {
+  @apply px-10 py-3 rounded-full bg-[var(--color-brand)] text-white text-base font-semibold shadow-lg 
+         hover:bg-[var(--color-brand-dark)] hover:shadow-xl transform hover:-translate-y-0.5;
 }
