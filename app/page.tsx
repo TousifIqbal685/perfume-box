@@ -1,15 +1,35 @@
 "use client";
 
+import { useEffect, useState } from "react"; // Added hooks
+import { supabase } from "@/supabaseClient"; // Added supabase
 import Link from "next/link";
 import BestSellers from "@/components/BestSellers";
 import RecentlyViewed from "@/components/RecentlyViewed";
-import PromoSection from "@/components/PromoSection"; // <--- 1. IMPORT THIS
+import PromoSection from "@/components/PromoSection";
+import ProductFeed from "@/components/ProductFeed"; // 1. Import ProductFeed
 
 export default function Home() {
   const videoUrl = "https://www.facebook.com/reel/732973635905006/";
   const embedUrl = `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(
     videoUrl
   )}&show_text=false&t=0&autoplay=1&muted=1`;
+
+  // 2. State to hold products for the Feed
+  const [allProducts, setAllProducts] = useState<any[]>([]);
+
+  // 3. Fetch products on mount
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const { data } = await supabase
+        .from("products")
+        .select("id, title, brand, slug, price, discounted_price, main_image_url, stock, category_id, created_at")
+        .eq("is_visible", true)
+        .order("created_at", { ascending: false });
+      
+      setAllProducts(data || []);
+    };
+    fetchProducts();
+  }, []);
 
   return (
     <main className="bg-white min-h-screen">
@@ -20,16 +40,13 @@ export default function Home() {
           alt="Perfume Banner"
           className="w-full h-full object-cover object-center"
         />
-
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col items-center justify-center text-white text-center px-4">
           <h1 className="text-5xl md:text-7xl font-serif font-bold tracking-tight drop-shadow-lg max-w-4xl leading-tight">
             The Art of Scent. <br /> Curated for You.
           </h1>
-
           <p className="text-lg md:text-xl mt-6 italic font-light opacity-90 max-w-2xl text-gray-100">
             Experience premium, authentic fragrances that define elegance and presence.
           </p>
-
           <Link
             href="/products/all"
             className="mt-10 px-8 py-3 bg-pink-600 text-white rounded-full font-semibold hover:bg-pink-700 transition-transform transform hover:scale-105 shadow-lg"
@@ -41,7 +58,7 @@ export default function Home() {
 
       <RecentlyViewed />
 
-      {/* --- VIDEO SECTION --- */}
+      {/* VIDEO SECTION */}
       <section className="py-10 bg-white">
         <div className="max-w-[1200px] mx-auto px-4">
           <div className="text-center mb-10">
@@ -50,7 +67,6 @@ export default function Home() {
             </h2>
             <p className="text-gray-500 mt-2">Discover the essence of elegance</p>
           </div>
-
           <div className="w-full max-w-[350px] mx-auto rounded-2xl overflow-hidden shadow-2xl border border-gray-100 bg-black">
             <iframe
               src={embedUrl}
@@ -66,11 +82,19 @@ export default function Home() {
         </div>
       </section>
       
-      {/* --- ADS / PROMO SECTION --- */}
-      {/* 2. PLACED HERE AS REQUESTED */}
       <PromoSection />
 
       <BestSellers />
+
+      {/* 4. ADD THE PRODUCT FEED HERE */}
+      <section className="py-16 bg-[#fdfdfd] px-4 md:px-10 border-t border-gray-100">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-serif font-bold text-gray-900">Explore All</h2>
+          <div className="w-16 h-1 bg-pink-600 mx-auto my-4 rounded-full"></div>
+        </div>
+        {/* Pass the fetched products to the feed component */}
+        <ProductFeed initialProducts={allProducts} />
+      </section>
       
       {/* Featurette Section */}
       <section className="bg-gray-50 py-16 mt-10">

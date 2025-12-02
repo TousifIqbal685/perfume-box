@@ -8,7 +8,7 @@ import { useCart } from "@/context/CartContext";
 import { useUser } from "@/context/UserContext";
 import AuthModal from "./AuthModal";
 
-import { Search, ShoppingBag, Menu, X, UserCircle } from "lucide-react";
+import { Search, ShoppingBag, Menu, X, User } from "lucide-react";
 
 export default function Header() {
   const router = useRouter();
@@ -17,34 +17,31 @@ export default function Header() {
   const [results, setResults] = useState<any[]>([]);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
+  
   const searchContainerRef = useRef<HTMLDivElement>(null);
+  const mobileSearchRef = useRef<HTMLDivElement>(null);
 
   const { user } = useUser();
   const { total, itemCount, openCart } = useCart();
 
   const handleUserClick = () => {
-    if (user) {
-      router.push("/profile");
-    } else {
-      setShowLoginPopup(true);
-    }
+    if (user) router.push("/profile");
+    else setShowLoginPopup(true);
   };
 
   const getLinkClass = (path: string) => {
     const isActive = pathname === path;
-    return isActive
-      ? "text-black font-extrabold"
-      : "text-gray-700 font-medium hover:text-black transition-colors";
+    return `text-sm font-medium tracking-wide transition-all duration-300 relative group ${
+      isActive ? "text-black" : "text-gray-600 hover:text-black"
+    }`;
   };
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        searchContainerRef.current &&
-        !searchContainerRef.current.contains(event.target as Node)
-      ) {
-        setResults([]);
-      }
+      const target = event.target as Node;
+      const isOutsideDesktop = searchContainerRef.current && !searchContainerRef.current.contains(target);
+      const isOutsideMobile = mobileSearchRef.current && !mobileSearchRef.current.contains(target);
+      if (isOutsideDesktop && isOutsideMobile) setResults([]);
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -56,16 +53,13 @@ export default function Header() {
         setResults([]);
         return;
       }
-
       const { data } = await supabase
         .from("products")
         .select("id,title,brand,main_image_url,slug")
         .ilike("title", `%${search}%`)
         .limit(5);
-
       setResults(data || []);
     }, 300);
-
     return () => clearTimeout(timer);
   }, [search]);
 
@@ -77,119 +71,117 @@ export default function Header() {
 
   return (
     <>
-      <AuthModal
-        open={showLoginPopup}
-        onClose={() => setShowLoginPopup(false)}
-      />
+      <AuthModal open={showLoginPopup} onClose={() => setShowLoginPopup(false)} />
 
-      <header className="sticky top-0 bg-white/90 backdrop-blur-xl shadow-sm z-50 transition-all border-b border-gray-100">
-        <nav className="relative flex items-center justify-between px-4 md:px-10 py-3 md:py-4 h-16 md:h-20">
+      {/* --- HEADER CONTAINER --- */}
+      <header className="sticky top-0 bg-white z-50 border-b border-gray-100 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.02)] transition-all">
+        
+        {/* TOP NAV BAR */}
+        <nav className="max-w-[1800px] mx-auto flex items-center justify-between px-6 md:px-12 h-20 md:h-24">
           
-          {/* 1. MOBILE MENU BUTTON (LEFT) */}
-          <button
-            className="md:hidden p-2 -ml-2 text-gray-800 hover:bg-gray-100 rounded-full transition-colors"
-            onClick={() => setMobileOpen(!mobileOpen)}
-          >
-            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          {/* 1. LEFT: LOGO */}
+          <div className="flex items-center gap-4">
+            {/* Mobile Menu Button */}
+            <button
+              className="md:hidden p-2 -ml-2 text-gray-800 hover:bg-gray-50 rounded-full transition-colors"
+              onClick={() => setMobileOpen(!mobileOpen)}
+            >
+              {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
 
-          {/* 2. LOGO (CENTER ON MOBILE, LEFT ON DESKTOP) */}
-          <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 md:static md:transform-none md:flex md:items-center gap-3">
-            <Link href="/" className="flex items-center gap-2 md:gap-3">
+            <Link href="/" className="flex items-center gap-3 group">
               <img
                 src="/logo.jpg"
-                className="w-8 h-8 md:w-10 md:h-10 rounded-full shadow-sm object-cover"
+                className="w-10 h-10 md:w-12 md:h-12 rounded-full shadow-sm object-cover border border-gray-100 group-hover:opacity-90 transition-opacity"
                 alt="Logo"
               />
-              <span className="text-lg md:text-2xl font-bold font-serif whitespace-nowrap">
+              <span className="text-xl md:text-2xl font-bold font-serif tracking-tight text-gray-900">
                 PERFUME BOX
               </span>
             </Link>
           </div>
 
-          {/* 3. DESKTOP NAV LINKS (CENTER) */}
-          <div className="hidden md:flex gap-8 absolute left-1/2 transform -translate-x-1/2">
-            <Link href="/products/all" className={getLinkClass("/products/all")}>
-              ALL
-            </Link>
-            <Link href="/products/men" className={getLinkClass("/products/men")}>
-              MEN
-            </Link>
-            <Link href="/products/women" className={getLinkClass("/products/women")}>
-              WOMEN
-            </Link>
-            <Link href="/products/unisex" className={getLinkClass("/products/unisex")}>
-              UNISEX
-            </Link>
-            <Link href="/products/body-spray" className={getLinkClass("/products/body-spray")}>
-              BODY SPRAY
-            </Link>
-          </div>
-
-          {/* 4. RIGHT SIDE ICONS */}
-          <div className="flex items-center gap-3 md:gap-5">
-            
-            {/* Search (Desktop Only for Layout Cleanliness) */}
-            <div
-              ref={searchContainerRef}
-              className="relative hidden md:flex items-center bg-gray-100 px-4 py-2 rounded-full w-64 lg:w-72 transition-all focus-within:bg-white focus-within:ring-1 focus-within:ring-black"
-            >
-              <Search className="w-4 h-4 text-gray-500" />
+          {/* 2. CENTER: SEARCH BAR (Professional & Wide) */}
+          <div className="hidden md:flex flex-1 max-w-2xl mx-12 justify-center relative" ref={searchContainerRef}>
+            <div className="relative w-full group">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <Search className="h-5 w-5 text-gray-400 group-focus-within:text-black transition-colors" />
+              </div>
               <input
+                type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="ml-2 w-full bg-transparent text-sm outline-none placeholder:text-gray-400"
-                placeholder="Search..."
+                className="block w-full pl-11 pr-4 py-3 bg-gray-50 border border-transparent rounded-full text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-50 transition-all duration-300 shadow-inner"
+                placeholder="Search for scents, brands..."
               />
-              {/* Dropdown */}
+              
+              {/* Desktop Search Results Dropdown */}
               {results.length > 0 && (
-                <div className="absolute top-12 left-0 w-full bg-white shadow-xl rounded-xl border border-gray-100 overflow-hidden z-[100]">
+                <div className="absolute top-14 left-0 w-full bg-white shadow-2xl rounded-2xl border border-gray-100 overflow-hidden z-[100] py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="px-4 py-2 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-50 mb-1">Products</div>
                   {results.map((product) => (
                     <div
                       key={product.id}
                       onClick={() => handleProductClick(product.slug)}
-                      className="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer border-b last:border-0"
+                      className="flex items-center gap-4 px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors"
                     >
                       <img
                         src={product.main_image_url}
                         alt={product.title}
-                        className="w-10 h-10 object-cover rounded-md bg-gray-100"
+                        className="w-12 h-12 object-cover rounded-md bg-gray-100 border border-gray-100"
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold truncate">{product.title}</p>
-                        <p className="text-xs text-gray-500">{product.brand}</p>
+                        <p className="text-sm font-semibold text-gray-900 truncate">{product.title}</p>
+                        <p className="text-xs text-gray-500 font-medium">{product.brand}</p>
                       </div>
                     </div>
                   ))}
                 </div>
               )}
             </div>
+          </div>
 
-            {/* User Icon (Desktop) */}
-            <button onClick={handleUserClick} className="hidden md:flex hover:scale-105 transition-transform">
-              <UserCircle
-                className={`w-7 h-7 ${user ? "text-black" : "text-gray-600"}`}
-              />
+          {/* 3. RIGHT: ICONS & LINKS */}
+          <div className="flex items-center gap-6 md:gap-8">
+            
+            {/* Desktop Nav Links (Hidden on Mobile) */}
+            <div className="hidden lg:flex items-center gap-8 mr-4">
+               {["ALL", "MEN", "WOMEN", "UNISEX"].map((item) => (
+                 <Link 
+                   key={item} 
+                   href={`/products/${item.toLowerCase()}`} 
+                   className={getLinkClass(`/products/${item.toLowerCase()}`)}
+                 >
+                   {item}
+                   {/* Underline Animation */}
+                   <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-black transition-all duration-300 group-hover:w-full"></span>
+                 </Link>
+               ))}
+            </div>
+
+            {/* Account Icon */}
+            <button onClick={handleUserClick} className="hidden md:flex items-center gap-2 text-gray-700 hover:text-black transition-colors">
+              <User className="w-6 h-6" />
+              {user && <span className="text-sm font-medium hidden xl:block max-w-[100px] truncate">{user.full_name?.split(' ')[0]}</span>}
             </button>
 
-            {/* CART (ALWAYS VISIBLE) */}
+            {/* Cart Icon */}
             <button 
               onClick={openCart}
-              className="flex items-center gap-2 group hover:opacity-80 transition-opacity"
+              className="flex items-center gap-3 group relative"
             >
-              <div className="relative">
-                <ShoppingBag className="w-6 h-6 text-gray-800" />
+              <div className="relative p-2 rounded-full hover:bg-gray-100 transition-colors">
+                <ShoppingBag className="w-6 h-6 text-gray-900" />
                 {itemCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-black text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white shadow-sm">
+                  <span className="absolute top-0 right-0 bg-black text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white shadow-sm transform scale-100 transition-transform group-hover:scale-110">
                     {itemCount}
                   </span>
                 )}
               </div>
-              
-              {/* Price - Hidden on very small screens if space is tight, or visible if desired */}
+              {/* Total Price */}
               {total > 0 && (
-                 <span className="text-sm font-bold text-gray-900 hidden sm:block">
-                    ৳ {total.toLocaleString()}
+                 <span className="hidden sm:block text-sm font-bold text-gray-900 tabular-nums">
+                   ৳ {total.toLocaleString()}
                  </span>
               )}
             </button>
@@ -197,14 +189,16 @@ export default function Header() {
           </div>
         </nav>
 
-        {/* MOBILE SEARCH BAR (Visible below header on mobile) */}
-        <div className="md:hidden px-4 pb-3">
-            <div className="flex items-center bg-gray-100 px-4 py-2.5 rounded-xl">
-                <Search className="w-4 h-4 text-gray-500" />
+        {/* --- MOBILE SEARCH BAR (Clean & separate) --- */}
+        <div ref={mobileSearchRef} className="md:hidden px-6 pb-4 bg-white border-b border-gray-50">
+            <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Search className="h-4 w-4 text-gray-400" />
+                </div>
                 <input
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="ml-2 w-full bg-transparent text-sm outline-none placeholder:text-gray-500"
+                    className="block w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:bg-white focus:border-gray-300 focus:ring-2 focus:ring-gray-100 transition-all"
                     placeholder="Search perfumes..."
                 />
             </div>
@@ -217,11 +211,7 @@ export default function Header() {
                       onClick={() => handleProductClick(product.slug)}
                       className="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer border-b last:border-0"
                     >
-                      <img
-                        src={product.main_image_url}
-                        alt={product.title}
-                        className="w-10 h-10 object-cover rounded-md bg-gray-100"
-                      />
+                      <img src={product.main_image_url} alt={product.title} className="w-10 h-10 object-cover rounded-md bg-gray-100" />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold truncate">{product.title}</p>
                         <p className="text-xs text-gray-500">{product.brand}</p>
@@ -232,56 +222,60 @@ export default function Header() {
               )}
         </div>
 
-        {/* MOBILE MENU DRAWER */}
-        {mobileOpen && (
-          <div className="md:hidden bg-white border-t border-gray-100 px-4 py-4 space-y-1 shadow-inner absolute w-full left-0 top-full h-screen z-40">
-            <Link
-              href="/products/all"
-              onClick={() => setMobileOpen(false)}
-              className={`block py-3 px-4 rounded-lg ${getLinkClass("/products/all")}`}
-            >
-              ALL PRODUCTS
-            </Link>
-            <Link
-              href="/products/men"
-              onClick={() => setMobileOpen(false)}
-              className={`block py-3 px-4 rounded-lg ${getLinkClass("/products/men")}`}
-            >
-              MEN
-            </Link>
-            <Link
-              href="/products/women"
-              onClick={() => setMobileOpen(false)}
-              className={`block py-3 px-4 rounded-lg ${getLinkClass("/products/women")}`}
-            >
-              WOMEN
-            </Link>
-            <Link
-              href="/products/unisex"
-              onClick={() => setMobileOpen(false)}
-              className={`block py-3 px-4 rounded-lg ${getLinkClass("/products/unisex")}`}
-            >
-              UNISEX
-            </Link>
-            <Link
-              href="/products/body-spray"
-              onClick={() => setMobileOpen(false)}
-              className={`block py-3 px-4 rounded-lg ${getLinkClass("/products/body-spray")}`}
-            >
-              BODY SPRAY
-            </Link>
-            
-            <div className="border-t border-gray-100 my-2 pt-2">
-                <button 
-                    onClick={() => { handleUserClick(); setMobileOpen(false); }}
-                    className="flex items-center gap-3 w-full py-3 px-4 text-left font-medium text-gray-700 hover:bg-gray-50 rounded-lg"
+        {/* --- MOBILE MENU DRAWER --- */}
+        <div 
+          className={`md:hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${
+            mobileOpen ? "opacity-100 visible" : "opacity-0 invisible"
+          }`}
+          onClick={() => setMobileOpen(false)}
+        >
+          <div 
+            className={`absolute top-0 left-0 w-[80%] max-w-[300px] h-full bg-white shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col ${
+              mobileOpen ? "translate-x-0" : "-translate-x-full"
+            }`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Drawer Header */}
+            <div className="p-6 border-b border-gray-100 flex items-center justify-between">
+               <span className="font-serif font-bold text-xl">MENU</span>
+               <button onClick={() => setMobileOpen(false)} className="p-2 hover:bg-gray-100 rounded-full"><X className="w-5 h-5"/></button>
+            </div>
+
+            {/* Links */}
+            <div className="flex-1 overflow-y-auto py-4 px-6 space-y-1">
+              {[
+                { name: "ALL PRODUCTS", path: "/products/all" },
+                { name: "MEN", path: "/products/men" },
+                { name: "WOMEN", path: "/products/women" },
+                { name: "UNISEX", path: "/products/unisex" },
+                { name: "BODY SPRAY", path: "/products/body-spray" }
+              ].map((link) => (
+                <Link
+                  key={link.path}
+                  href={link.path}
+                  onClick={() => setMobileOpen(false)}
+                  className={`block py-3 text-sm font-bold tracking-wide border-b border-gray-50 last:border-0 hover:text-pink-600 transition-colors ${
+                    pathname === link.path ? "text-black" : "text-gray-600"
+                  }`}
                 >
-                    <UserCircle className="w-5 h-5" />
-                    {user ? "My Profile" : "Login / Sign Up"}
-                </button>
+                  {link.name}
+                </Link>
+              ))}
+            </div>
+
+            {/* User Section at Bottom */}
+            <div className="p-6 bg-gray-50 border-t border-gray-100">
+               <button 
+                  onClick={() => { handleUserClick(); setMobileOpen(false); }}
+                  className="flex items-center gap-3 w-full py-3 px-4 bg-white border border-gray-200 rounded-xl shadow-sm text-sm font-bold text-gray-900 hover:bg-gray-100 transition-all"
+               >
+                  <User className="w-5 h-5" />
+                  {user ? "My Profile" : "Login / Sign Up"}
+               </button>
             </div>
           </div>
-        )}
+        </div>
+
       </header>
     </>
   );

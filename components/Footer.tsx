@@ -1,165 +1,148 @@
 "use client";
 
 import Link from "next/link";
+import { Facebook, Instagram, MessageCircle, MapPin, MessageSquare, Smartphone } from "lucide-react";
 
 export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="w-full mt-24 font-sans">
-      {/* ===== TOP LIGHT FOOTER ===== */}
-      <div className="bg-[#fcfcfc] border-t border-gray-100">
-        <div className="max-w-[1600px] mx-auto px-6 md:px-12 py-16 grid gap-12 md:grid-cols-4">
-          
-          {/* BRAND */}
-          <div className="md:pr-8">
-            <div className="flex items-center gap-4 mb-6">
-              <img
-                src="/logo.jpg"
-                alt="Perfume Box Logo"
-                className="w-12 h-12 rounded-full object-cover shadow-sm"
-              />
-              <span className="text-2xl font-serif font-bold text-gray-900 tracking-tight">
-                Perfume Box
-              </span>
-            </div>
-            <p className="text-sm text-gray-500 leading-7 font-light">
-              We sell 100% authentic perfumes in Bangladesh — directly imported
-              from Dubai, USA & UK showrooms. Guaranteed authenticity and the
-              best prices.
-            </p>
-            <p className="mt-4 text-sm text-gray-900 font-medium">
-              Keep loving Perfume Box — keep smelling premium.
-            </p>
+    <footer className="bg-black text-white font-sans border-t-4 border-pink-600">
+      
+      {/* 1. TOP ACTION BAR */}
+      <div className="border-b border-gray-800">
+        <div className="max-w-[1400px] mx-auto px-6 py-6 flex flex-wrap justify-center md:justify-between gap-6 text-sm font-medium tracking-wide">
+          <div className="flex items-center gap-6">
+            <span className="flex items-center gap-2 cursor-pointer hover:text-pink-500 transition">
+              <MapPin className="w-5 h-5" /> Find a Store
+            </span>
+            <span className="flex items-center gap-2 cursor-pointer hover:text-pink-500 transition">
+              <MessageSquare className="w-5 h-5" /> Customer Service
+            </span>
           </div>
-
-          {/* INFORMATION */}
-          <div>
-            <h3 className="text-sm font-bold uppercase tracking-widest text-gray-900 mb-6">Information</h3>
-            <ul className="space-y-4 text-sm text-gray-500 font-light">
-              <li className="hover:text-black transition-colors cursor-pointer">Payment Information</li>
-              <li className="hover:text-black transition-colors cursor-pointer">Return & Refund Policy</li>
-              <li className="hover:text-black transition-colors cursor-pointer">Shipping Policy</li>
-              <li className="hover:text-black transition-colors cursor-pointer">Product Care</li>
-              <li className="hover:text-black transition-colors cursor-pointer">Cancelation Policy</li>
-              <li className="hover:text-black transition-colors cursor-pointer">Terms & Conditions</li>
-              <li className="hover:text-black transition-colors cursor-pointer">Privacy & Cookies Policy</li>
-            </ul>
-          </div>
-
-          {/* COLLECTION – LINKS HOOKED TO HEADER ROUTES */}
-          <div>
-            <h3 className="text-sm font-bold uppercase tracking-widest text-gray-900 mb-6">Collection</h3>
-            <ul className="space-y-4 text-sm text-gray-500 font-light">
-              <li>
-                <Link
-                  href="/products/men"
-                  className="hover:text-red-700 transition-colors"
-                >
-                  Men Perfume
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/products/women"
-                  className="hover:text-red-700 transition-colors"
-                >
-                  Women Perfume
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/products/unisex"
-                  className="hover:text-red-700 transition-colors"
-                >
-                  Unisex Perfume
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/products/body-spray"
-                  className="hover:text-red-700 transition-colors"
-                >
-                  Body Spray
-                </Link>
-              </li>
-              <li className="text-red-600 font-medium">Hot Deals</li>
-            </ul>
-          </div>
-
-          {/* CONTACT */}
-          <div>
-            <h3 className="text-sm font-bold uppercase tracking-widest text-gray-900 mb-6">Contact Us</h3>
-            <ul className="space-y-4 text-sm text-gray-500 font-light">
-              <li className="flex items-center gap-2">
-                <span className="text-gray-900">📞</span> +8801716938156
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-gray-900">📍</span> Lalbagh, Dhaka – 1211
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-gray-900">⏰</span> Sat–Thu: 11:00 AM to 8:00 PM
-              </li>
-            </ul>
+          <div className="flex items-center gap-6">
+            <span className="flex items-center gap-2 cursor-pointer hover:text-pink-500 transition">
+              <Smartphone className="w-5 h-5" /> Get the App
+            </span>
           </div>
         </div>
       </div>
 
-      {/* ===== BOTTOM BAR (UPDATED: White BG, Bigger Logo, Premium Look) ===== */}
-      <div className="bg-white border-t border-gray-100">
-        <div className="w-full max-w-[1800px] mx-auto px-6 md:px-12 py-8 flex flex-col md:flex-row items-center justify-between gap-6">
+      {/* 2. MAIN CONTENT GRID */}
+      <div className="max-w-[1400px] mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+        
+        {/* COL 1: ABOUT */}
+        <div>
+          <h3 className="text-base font-bold uppercase tracking-widest mb-6">About Perfume Box</h3>
+          <ul className="space-y-3 text-sm text-gray-300">
+            <li><Link href="/about" className="hover:underline hover:text-white transition">Our Story</Link></li>
+            <li><Link href="/authenticity" className="hover:underline hover:text-white transition">Authenticity Guarantee</Link></li>
+            <li><Link href="/careers" className="hover:underline hover:text-white transition">Careers</Link></li>
+            <li><Link href="/terms" className="hover:underline hover:text-white transition">Terms of Use</Link></li>
+            <li><Link href="/privacy" className="hover:underline hover:text-white transition">Privacy Policy</Link></li>
+          </ul>
+        </div>
+
+        {/* COL 2: HELP */}
+        <div>
+          <h3 className="text-base font-bold uppercase tracking-widest mb-6">Help & Support</h3>
+          <ul className="space-y-3 text-sm text-gray-300">
+            <li><Link href="/shipping" className="hover:underline hover:text-white transition">Shipping & Delivery</Link></li>
+            <li><Link href="/returns" className="hover:underline hover:text-white transition">Returns & Exchanges</Link></li>
+            <li><Link href="/contact" className="hover:underline hover:text-white transition">Contact Us</Link></li>
+            <li><Link href="/faq" className="hover:underline hover:text-white transition">FAQs</Link></li>
+            <li><Link href="/order-status" className="hover:underline hover:text-white transition">Order Status</Link></li>
+          </ul>
+        </div>
+
+        {/* COL 3: SHOP */}
+        <div>
+          <h3 className="text-base font-bold uppercase tracking-widest mb-6">Shop Collection</h3>
+          <ul className="space-y-3 text-sm text-gray-300">
+            <li><Link href="/products/men" className="hover:underline hover:text-white transition">Men's Fragrance</Link></li>
+            <li><Link href="/products/women" className="hover:underline hover:text-white transition">Women's Fragrance</Link></li>
+            <li><Link href="/products/unisex" className="hover:underline hover:text-white transition">Unisex Collection</Link></li>
+            <li><Link href="/products/body-spray" className="hover:underline hover:text-white transition">Body Mists</Link></li>
+            <li><Link href="/products/all" className="hover:underline hover:text-white transition">New Arrivals</Link></li>
+          </ul>
+        </div>
+
+        {/* COL 4: NEWSLETTER */}
+        <div className="lg:pl-8">
+          <h2 className="font-serif text-3xl md:text-4xl leading-tight mb-4 text-white">
+            We Belong to Something <span className="italic text-pink-500">Beautiful</span>
+          </h2>
+          <p className="text-gray-400 text-sm mb-6">
+            Sign up for Perfume Box emails and get the first look at new arrivals and exclusive offers.
+          </p>
           
-          {/* Left – Logo (Bigger & Full Left) */}
-          <div className="flex items-center gap-4">
-            <img
-              src="/logo.jpg"
-              alt="Perfume Box Logo"
-              className="w-14 h-14 rounded-full object-cover shadow-md border border-gray-100"
+          <form className="flex flex-col gap-3">
+            <input 
+              type="email" 
+              placeholder="Enter your email address" 
+              className="bg-white text-black px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 w-full"
             />
-             <span className="hidden md:block text-sm font-bold tracking-[0.2em] text-gray-900 uppercase">
-                Perfume Box
-             </span>
+            <button className="bg-transparent border border-white text-white px-6 py-3 rounded-md font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-all">
+              Sign Up
+            </button>
+          </form>
+        </div>
+
+      </div>
+
+      {/* 3. BOTTOM BAR (Logo, Copyright, Socials) */}
+      <div className="bg-gray-900 border-t border-gray-800">
+        <div className="max-w-[1400px] mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-8">
+          
+          {/* LEFT: LOGO & COPYRIGHT */}
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            {/* LOGO ADDED HERE */}
+            <img 
+              src="/logo.jpg" 
+              alt="Perfume Box Logo" 
+              className="w-14 h-14 rounded-full object-cover border border-gray-700 shadow-sm opacity-90 hover:opacity-100 transition-opacity"
+            />
+            
+            {/* COPYRIGHT TEXT */}
+            <div className="text-xs text-gray-500 text-center md:text-left">
+              <p>© {year} Perfume Box Bangladesh. All rights reserved.</p>
+              <p className="mt-1 opacity-75">100% Authentic Products. Sourced from Dubai, USA & UK.</p>
+            </div>
           </div>
 
-          {/* Center – Social Links (Premium Red Hover) */}
-          <nav className="flex flex-wrap justify-center gap-10 text-xs font-bold uppercase tracking-[0.2em] text-gray-400">
-
-            {/* FACEBOOK */}
-            <a
-              href="https://www.facebook.com/profile.php?id=61561883782700&sk=about_profile_transparency"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="transition-all duration-300 hover:text-red-700 hover:scale-105"
+          {/* RIGHT: SOCIAL ICONS */}
+          <div className="flex items-center gap-8">
+            <a 
+              href="https://www.facebook.com/profile.php?id=61561883782700" 
+              target="_blank" 
+              rel="noreferrer"
+              className="group flex flex-col items-center gap-1 hover:text-pink-500 transition-colors"
             >
-              Facebook
+              <Facebook className="w-6 h-6" />
+              <span className="text-[10px] font-bold tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity">Facebook</span>
             </a>
 
-            {/* INSTAGRAM */}
-            <a
-              href="https://www.instagram.com/perfumeboxbangladesh?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
-              target="_blank"
-              rel="noopener noreferrer"
-              className="transition-all duration-300 hover:text-red-700 hover:scale-105"
+            <a 
+              href="https://www.instagram.com/perfumeboxbangladesh" 
+              target="_blank" 
+              rel="noreferrer"
+              className="group flex flex-col items-center gap-1 hover:text-pink-500 transition-colors"
             >
-              Instagram
+              <Instagram className="w-6 h-6" />
+              <span className="text-[10px] font-bold tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity">Instagram</span>
             </a>
 
-            {/* WHATSAPP */}
-            <a
-              href="https://wa.me/8801716938156"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="transition-all duration-300 hover:text-red-700 hover:scale-105"
+            <a 
+              href="https://wa.me/8801716938156" 
+              target="_blank" 
+              rel="noreferrer"
+              className="group flex flex-col items-center gap-1 hover:text-pink-500 transition-colors"
             >
-              WhatsApp
+              <MessageCircle className="w-6 h-6" />
+              <span className="text-[10px] font-bold tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity">WhatsApp</span>
             </a>
+          </div>
 
-          </nav>
-
-          {/* Right – YEAR */}
-          <p className="text-[10px] uppercase tracking-widest text-gray-400 mt-2 md:mt-0">
-            © {year} Perfume Box. All Rights Reserved.
-          </p>
         </div>
       </div>
     </footer>

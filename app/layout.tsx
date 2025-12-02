@@ -3,12 +3,22 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { CartProvider } from "@/context/CartContext";
-import { UserProvider } from "@/context/UserContext"; // Import UserProvider
+import { UserProvider } from "@/context/UserContext"; 
 import CartDrawer from "@/components/CartDrawer";
+import type { Metadata, Viewport } from "next"; // 1. Import Viewport type
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Perfume Box | Signature Scents",
   description: "Authentic and Premium Perfumes in Bangladesh. Discover luxury.",
+};
+
+// 2. ADD THIS VIEWPORT EXPORT
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false, // Optional: Prevents users from zooming in/out manually if you want a strict app-like feel
+  // themeColor: "#000000", // Optional: Changes browser bar color
 };
 
 export default function RootLayout({
@@ -18,25 +28,20 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="h-full">
-      <body className="min-h-screen flex flex-col bg-[var(--color-background)] text-[var(--color-foreground)]">
-        
-        {/* Wrap everything in UserProvider so auth state is global */}
+      <body 
+        className="min-h-screen flex flex-col bg-[var(--color-background)] text-[var(--color-foreground)] antialiased"
+        style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}
+      >
         <UserProvider>
           <CartProvider>
-            {/* HEADER + CART DRAWER */}
             <Header />
             <CartDrawer />
-
-            {/* MAIN CONTENT GROWS TO FILL, PUSHING FOOTER DOWN */}
             <main className="flex-1">
               {children}
             </main>
-
-            {/* FOOTER ALWAYS AT VERY BOTTOM */}
             <Footer />
           </CartProvider>
         </UserProvider>
-        
       </body>
     </html>
   );

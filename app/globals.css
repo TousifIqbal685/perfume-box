@@ -66,3 +66,10 @@ a:focus-visible {
   @apply px-10 py-3 rounded-full bg-[var(--color-brand)] text-white text-base font-semibold shadow-lg 
          hover:bg-[var(--color-brand-dark)] hover:shadow-xl transform hover:-translate-y-0.5;
 }
+
+/* app/globals.css */
+
+html, body {
+  overflow-x: hidden; /* Prevents side-scrolling if an element is too wide */
+  width: 100%;
+}
