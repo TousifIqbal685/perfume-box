@@ -80,9 +80,10 @@ export default function CheckoutPage() {
         }
 
         // Auto-login locally
-        if (typeof window !== "undefined" && appUserId) {
-            localStorage.setItem("app_user_id", appUserId);
-        }
+            // FIX: We check if appUserId exists (is truthy) before saving
+            if (typeof window !== "undefined" && appUserId) {
+                localStorage.setItem("app_user_id", appUserId);
+            }
       } else {
           // Already logged in? Update profile with latest address info
           await supabase.from("app_users").update({ 
@@ -298,7 +299,12 @@ export default function CheckoutPage() {
                     {items.map((item) => (
                         <div key={item.id} className="flex gap-4">
                             <div className="w-14 h-14 bg-gray-100 rounded-md overflow-hidden shrink-0">
-                                <img src={item.image} className="w-full h-full object-cover mix-blend-multiply" />
+                                {/* FIX: Add || "" to convert null to an empty string */}
+                                <img 
+                                    src={item.image || ""} 
+                                    alt={item.title || "Product"}
+                                    className="w-full h-full object-cover mix-blend-multiply" 
+                                />
                             </div>
                             <div className="flex-1">
                                 <p className="text-sm font-medium text-gray-900 line-clamp-2">{item.title}</p>
