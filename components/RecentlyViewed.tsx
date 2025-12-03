@@ -2,25 +2,23 @@
 
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import { useCart } from "@/context/CartContext"; // Import Cart Context
+import { useCart } from "@/context/CartContext"; 
 
 export default function RecentlyViewed() {
   const [products, setProducts] = useState<any[]>([]);
   const [mounted, setMounted] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   
-  const { addToCart, openCart } = useCart(); // Init Cart
+  const { addToCart, openCart } = useCart(); 
 
   useEffect(() => {
     setMounted(true);
-    // Read from local storage
     const stored = localStorage.getItem("recentlyViewed");
     if (stored) {
       setProducts(JSON.parse(stored));
     }
   }, []);
 
-  // Scroll logic (same as your other sliders)
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
       const { current } = scrollRef;
@@ -37,7 +35,6 @@ export default function RecentlyViewed() {
     e.preventDefault();
     e.stopPropagation();
     
-    // Determine price (Recently viewed usually stores the full object)
     const activePrice = item.discounted_price > 0 ? item.discounted_price : item.price;
 
     addToCart({
@@ -45,12 +42,11 @@ export default function RecentlyViewed() {
         title: item.title,
         price: activePrice,
         image: item.main_image_url,
-        quantity: 1
+        // quantity: 1 <-- REMOVED THIS LINE
     });
     openCart();
   };
 
-  // Don't render anything on the server (hydration fix) or if empty
   if (!mounted || products.length === 0) return null;
 
   return (
@@ -59,7 +55,6 @@ export default function RecentlyViewed() {
         <h2 className="text-2xl font-serif mb-6 px-2 text-gray-900">Recently Viewed</h2>
 
         <div className="relative group">
-          {/* Left Arrow */}
           <button 
             onClick={() => scroll('left')}
             className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white border border-gray-200 rounded-full shadow-md flex items-center justify-center text-gray-600 hover:bg-black hover:text-white hover:border-black transition-all opacity-0 group-hover:opacity-100 duration-300 -ml-4"
@@ -69,7 +64,6 @@ export default function RecentlyViewed() {
             </svg>
           </button>
 
-          {/* Slider */}
           <div 
             ref={scrollRef}
             className="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth pb-4 px-2"
@@ -87,7 +81,6 @@ export default function RecentlyViewed() {
                     className="h-[80%] w-auto object-contain mix-blend-multiply transition-transform duration-500 group-hover/card:scale-105"
                   />
                   
-                  {/* --- QUICK ADD BUTTON (RECENTLY VIEWED) --- */}
                    <button
                     onClick={(e) => handleQuickAdd(e, item)}
                     className="absolute bottom-0 left-0 right-0 bg-black/90 text-white font-bold uppercase tracking-widest text-[10px] md:text-xs py-2 
@@ -108,7 +101,6 @@ export default function RecentlyViewed() {
             ))}
           </div>
 
-          {/* Right Arrow */}
           <button 
             onClick={() => scroll('right')}
             className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white border border-gray-200 rounded-full shadow-md flex items-center justify-center text-gray-600 hover:bg-black hover:text-white hover:border-black transition-all opacity-0 group-hover:opacity-100 duration-300 -mr-4"

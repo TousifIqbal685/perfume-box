@@ -1,22 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { useCart } from "@/context/CartContext"; // Import Cart Context
+import { useCart } from "@/context/CartContext"; 
 
 export default function ProductCard({ product }: { product: any }) {
-  const { addToCart, openCart } = useCart(); // Hook to handle cart actions
+  const { addToCart, openCart } = useCart(); 
 
-  // Logic to determine active price and discount
   const activePrice = product.discounted_price > 0 ? product.discounted_price : product.price;
   const hasDiscount = product.discounted_price > 0;
   
-  // Calculate percentage off
   const discountPercent = hasDiscount
     ? Math.round(((product.price - product.discounted_price) / product.price) * 100)
     : 0;
 
   const handleQuickAdd = (e: React.MouseEvent) => {
-    e.preventDefault(); // Stop Link from navigating
+    e.preventDefault(); 
     e.stopPropagation();
     
     addToCart({
@@ -24,9 +22,9 @@ export default function ProductCard({ product }: { product: any }) {
       title: product.title,
       price: activePrice,
       image: product.main_image_url,
-      quantity: 1
+      // quantity: 1  <-- REMOVED THIS LINE TO FIX BUILD ERROR
     });
-    openCart(); // Optional: Open drawer to confirm add
+    openCart(); 
   };
 
   return (
@@ -35,7 +33,7 @@ export default function ProductCard({ product }: { product: any }) {
       className="group block bg-white rounded-md overflow-hidden hover:shadow-xl transition-all duration-300 relative"
     >
       
-      {/* IMAGE CONTAINER - Aspect Ratio 4:5 (Tall & Premium) */}
+      {/* IMAGE CONTAINER */}
       <div className="relative aspect-[4/5] bg-[#f8f8f8] flex items-center justify-center overflow-hidden">
         <img
           src={product.main_image_url}
@@ -43,15 +41,13 @@ export default function ProductCard({ product }: { product: any }) {
           className="h-full w-full object-cover mix-blend-multiply transition-transform duration-700 group-hover:scale-105"
         />
         
-        {/* Discount Badge - Top Left */}
         {hasDiscount && (
           <span className="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-sm uppercase tracking-wider">
             -{discountPercent}%
           </span>
         )}
 
-        {/* --- QUICK ADD BUTTON --- */}
-        {/* Mobile: Always visible (opacity-90). Desktop: Hidden (translate-y-full) until hover. */}
+        {/* QUICK ADD BUTTON */}
         <button
           onClick={handleQuickAdd}
           className="absolute bottom-0 left-0 right-0 bg-black/90 text-white font-bold uppercase tracking-widest text-[10px] md:text-xs py-2 md:py-3 
@@ -63,17 +59,14 @@ export default function ProductCard({ product }: { product: any }) {
 
       {/* INFO SECTION */}
       <div className="p-3 text-left">
-        {/* Brand Name - Small & Uppercase */}
         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 truncate">
           {product.brand}
         </p>
         
-        {/* Title - Limit to 2 lines to keep grid even */}
         <h3 className="text-sm font-medium text-gray-900 leading-tight mb-2 line-clamp-2 min-h-[2.5em] group-hover:text-pink-600 transition-colors">
           {product.title}
         </h3>
         
-        {/* Price Section */}
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-sm font-bold text-gray-900">
             ৳ {activePrice.toLocaleString()}
