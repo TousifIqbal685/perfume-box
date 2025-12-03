@@ -2,11 +2,14 @@
 
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import { useCart } from "@/context/CartContext"; // Import Cart Context
 
 export default function RecentlyViewed() {
   const [products, setProducts] = useState<any[]>([]);
   const [mounted, setMounted] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  
+  const { addToCart, openCart } = useCart(); // Init Cart
 
   useEffect(() => {
     setMounted(true);
@@ -28,6 +31,23 @@ export default function RecentlyViewed() {
         current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
       }
     }
+  };
+
+  const handleQuickAdd = (e: React.MouseEvent, item: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Determine price (Recently viewed usually stores the full object)
+    const activePrice = item.discounted_price > 0 ? item.discounted_price : item.price;
+
+    addToCart({
+        id: item.id,
+        title: item.title,
+        price: activePrice,
+        image: item.main_image_url,
+        quantity: 1
+    });
+    openCart();
   };
 
   // Don't render anything on the server (hydration fix) or if empty
@@ -66,7 +86,17 @@ export default function RecentlyViewed() {
                     alt={item.title} 
                     className="h-[80%] w-auto object-contain mix-blend-multiply transition-transform duration-500 group-hover/card:scale-105"
                   />
+                  
+                  {/* --- QUICK ADD BUTTON (RECENTLY VIEWED) --- */}
+                   <button
+                    onClick={(e) => handleQuickAdd(e, item)}
+                    className="absolute bottom-0 left-0 right-0 bg-black/90 text-white font-bold uppercase tracking-widest text-[10px] md:text-xs py-2 
+                               translate-y-0 md:translate-y-full md:group-hover/card:translate-y-0 transition-transform duration-300 ease-in-out z-20 hover:bg-pink-600"
+                  >
+                    Quick Add +
+                  </button>
                 </div>
+
                 <div className="text-center space-y-1">
                   <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">{item.brand}</p>
                   <h3 className="text-sm font-serif text-gray-900 group-hover/card:text-pink-600 transition-colors whitespace-nowrap overflow-hidden text-ellipsis px-1">

@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react"; // Added hooks
-import { supabase } from "@/supabaseClient"; // Added supabase
+import { useEffect, useState } from "react";
+import { supabase } from "@/supabaseClient";
 import Link from "next/link";
 import BestSellers from "@/components/BestSellers";
 import RecentlyViewed from "@/components/RecentlyViewed";
 import PromoSection from "@/components/PromoSection";
-import ProductFeed from "@/components/ProductFeed"; // 1. Import ProductFeed
+import ProductFeed from "@/components/ProductFeed";
 
 export default function Home() {
   const videoUrl = "https://www.facebook.com/reel/732973635905006/";
@@ -14,10 +14,27 @@ export default function Home() {
     videoUrl
   )}&show_text=false&t=0&autoplay=1&muted=1`;
 
-  // 2. State to hold products for the Feed
   const [allProducts, setAllProducts] = useState<any[]>([]);
 
-  // 3. Fetch products on mount
+  // --- CAROUSEL STATE & LOGIC ---
+  const carouselImages = [
+    "/Gemini_Generated_Image_qgakguqgakguqgak.png",
+    "/unnamed (1).jpg",
+    "/arabian.png",
+  ];
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    // Set up a timer to change the image every 5 seconds
+    const intervalId = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % carouselImages.length);
+    }, 5000); // 5000 milliseconds = 5 seconds
+
+    // Clear the timer when the component unmounts
+    return () => clearInterval(intervalId);
+  }, []);
+  // ---------------------------
+
   useEffect(() => {
     const fetchProducts = async () => {
       const { data } = await supabase
@@ -58,6 +75,24 @@ export default function Home() {
 
       <RecentlyViewed />
 
+      {/* --- NEW SECTION: AUTO-SCROLLING CAROUSEL (RESIZED) --- */}
+      <section className="w-full mt-10 px-4">
+        {/* Constrained max-width to match Hero and reduced height to preserve quality */}
+        <div className="max-w-[1600px] mx-auto relative h-[350px] md:h-[500px] overflow-hidden rounded-2xl shadow-lg bg-gray-50">
+          {carouselImages.map((src, index) => (
+            <img
+              key={src}
+              src={src}
+              alt={`Carousel Slide ${index + 1}`}
+              className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000 ease-in-out ${
+                index === currentImageIndex ? "opacity-100 z-10" : "opacity-0 z-0"
+              }`}
+            />
+          ))}
+        </div>
+      </section>
+      {/* --- END NEW SECTION --- */}
+
       {/* VIDEO SECTION */}
       <section className="py-10 bg-white">
         <div className="max-w-[1200px] mx-auto px-4">
@@ -86,13 +121,12 @@ export default function Home() {
 
       <BestSellers />
 
-      {/* 4. ADD THE PRODUCT FEED HERE */}
+      {/* PRODUCT FEED */}
       <section className="py-16 bg-[#fdfdfd] px-4 md:px-10 border-t border-gray-100">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-serif font-bold text-gray-900">Explore All</h2>
           <div className="w-16 h-1 bg-pink-600 mx-auto my-4 rounded-full"></div>
         </div>
-        {/* Pass the fetched products to the feed component */}
         <ProductFeed initialProducts={allProducts} />
       </section>
       

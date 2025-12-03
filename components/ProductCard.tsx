@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useCart } from "@/context/CartContext"; // Import Cart Context
 
 export default function ProductCard({ product }: { product: any }) {
+  const { addToCart, openCart } = useCart(); // Hook to handle cart actions
+
   // Logic to determine active price and discount
   const activePrice = product.discounted_price > 0 ? product.discounted_price : product.price;
   const hasDiscount = product.discounted_price > 0;
@@ -12,10 +15,24 @@ export default function ProductCard({ product }: { product: any }) {
     ? Math.round(((product.price - product.discounted_price) / product.price) * 100)
     : 0;
 
+  const handleQuickAdd = (e: React.MouseEvent) => {
+    e.preventDefault(); // Stop Link from navigating
+    e.stopPropagation();
+    
+    addToCart({
+      id: product.id,
+      title: product.title,
+      price: activePrice,
+      image: product.main_image_url,
+      quantity: 1
+    });
+    openCart(); // Optional: Open drawer to confirm add
+  };
+
   return (
     <Link 
       href={`/product/${product.slug}`} 
-      className="group block bg-white rounded-md overflow-hidden hover:shadow-xl transition-all duration-300"
+      className="group block bg-white rounded-md overflow-hidden hover:shadow-xl transition-all duration-300 relative"
     >
       
       {/* IMAGE CONTAINER - Aspect Ratio 4:5 (Tall & Premium) */}
@@ -32,6 +49,16 @@ export default function ProductCard({ product }: { product: any }) {
             -{discountPercent}%
           </span>
         )}
+
+        {/* --- QUICK ADD BUTTON --- */}
+        {/* Mobile: Always visible (opacity-90). Desktop: Hidden (translate-y-full) until hover. */}
+        <button
+          onClick={handleQuickAdd}
+          className="absolute bottom-0 left-0 right-0 bg-black/90 text-white font-bold uppercase tracking-widest text-[10px] md:text-xs py-2 md:py-3 
+                     translate-y-0 md:translate-y-full md:group-hover:translate-y-0 transition-transform duration-300 ease-in-out z-20 hover:bg-pink-600"
+        >
+          Quick Add +
+        </button>
       </div>
 
       {/* INFO SECTION */}
