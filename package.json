@@ -13,7 +13,7 @@
     "@fontsource/nunito-sans": "^5.2.7",
     "@supabase/supabase-js": "^2.81.1",
     "lucide-react": "^0.554.0",
-    "next": "16.0.1",
+    "next": "16.0.7",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-player": "^3.4.0"
@@ -25,7 +25,7 @@
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.22",
     "eslint": "^9",
-    "eslint-config-next": "16.0.1",
+    "eslint-config-next": "16.0.7",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.3.5",
     "typescript": "^5"
