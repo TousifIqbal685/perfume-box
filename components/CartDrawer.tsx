@@ -93,9 +93,13 @@ export default function CartDrawer() {
                   <div className="flex-1 flex flex-col h-24 justify-between">
                     <div>
                       <div className="flex justify-between items-start">
-                        <h3 className="font-medium text-gray-900 line-clamp-2 leading-tight">
-                          {item.title}
-                        </h3>
+                        <div className="pr-4">
+                            <h3 className="font-medium text-gray-900 line-clamp-2 leading-tight">
+                              {item.title}
+                            </h3>
+                            {/* Logic to display size based on title parsing or if you passed it separately */}
+                            {/* Since we send title as "Name (5ml)", it displays automatically. */}
+                        </div>
                         <button
                           onClick={() => removeFromCart(item.id)}
                           className="text-gray-400 hover:text-red-500 ml-2"
@@ -152,7 +156,7 @@ export default function CartDrawer() {
 
             <div className="space-y-3">
               <Link
-                href="/cart"
+                href="/checkout" // CHANGED: Direct to checkout usually better from drawer
                 onClick={closeCart}
                 className="block w-full text-center bg-rose-600 text-white py-3.5 rounded-full font-semibold hover:bg-rose-700 hover:shadow-lg hover:shadow-rose-200/50 transition-all transform active:scale-[0.98]"
               >

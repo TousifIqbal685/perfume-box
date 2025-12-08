@@ -7,8 +7,6 @@ import { useCart } from "@/context/CartContext";
 import { useUser } from "@/context/UserContext";
 import { CheckCircle, MapPin, Phone, Mail, User, Truck, CreditCard, ShoppingBag } from "lucide-react";
 
-// 1. RENAME the main logic component to 'CheckoutContent'
-// This component uses useSearchParams, so it must be wrapped in Suspense
 function CheckoutContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -32,7 +30,6 @@ function CheckoutContent() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  // --- PRE-FILL FORM WHEN USER LOADS ---
   useEffect(() => {
     if (user) {
         setFullName(user.full_name || "");
@@ -53,16 +50,13 @@ function CheckoutContent() {
 
     setLoading(true);
     try {
-      // --- STEP 1: IDENTIFY OR CREATE APP USER ---
       let appUserId = user?.id; 
 
       if (!appUserId) {
-        // Not logged in? Check if user exists by Phone
         const { data: existingUser } = await supabase.from("app_users").select("id").eq("phone", phone).single();
 
         if (existingUser) {
           appUserId = existingUser.id;
-          // Update missing info for existing guest
           await supabase.from("app_users").update({ 
               full_name: fullName, 
               address, 
@@ -70,7 +64,6 @@ function CheckoutContent() {
               email 
           }).eq("id", appUserId);
         } else {
-          // Create new user
           const { data: newUser, error: createError } = await supabase
             .from("app_users")
             .insert([{ phone, full_name: fullName, email, address, city }])
@@ -81,25 +74,19 @@ function CheckoutContent() {
           appUserId = newUser.id;
         }
 
-        // Auto-login locally
-        // FIX: Check if appUserId exists before saving to satisfy TypeScript
         if (typeof window !== "undefined" && appUserId) {
             localStorage.setItem("app_user_id", appUserId);
         }
       } else {
-          // Already logged in? Update profile with latest address info
           await supabase.from("app_users").update({ 
               full_name: fullName, 
               email, 
               address, 
               city 
           }).eq("id", appUserId);
-          
-          // Refresh context immediately
           refreshUser();
       }
 
-      // --- STEP 2: CREATE SHIPPING CUSTOMER ENTRY ---
       const { data: customer, error: customerError } = await supabase
         .from("customers")
         .insert([{ full_name: fullName, phone, email, address: `${address}, ${city}` }])
@@ -108,13 +95,12 @@ function CheckoutContent() {
 
       if (customerError) throw customerError;
 
-      // --- STEP 3: CREATE ORDER ---
       const { data: order, error: orderError } = await supabase
         .from("orders")
         .insert([
           {
             customer_id: customer.id,
-            app_user_id: appUserId, // Linked to App User
+            app_user_id: appUserId,
             total_amount: finalTotal,
             shipping_fee: shippingFee,
             discount: discount,
@@ -129,30 +115,35 @@ function CheckoutContent() {
 
       if (orderError) throw orderError;
 
-      // --- STEP 4: CREATE ORDER ITEMS ---
-      const itemsPayload = items.map((item) => ({
-        order_id: order.id,
-        product_id: item.id,
-        quantity: item.quantity,
-        price: item.price,
-      }));
+      // --- CRITICAL FIX: Extract correct UUID ---
+      const itemsPayload = items.map((item) => {
+        // A UUID is always 36 characters long.
+        // Even if our ID is "uuid-5ml", the first 36 chars are the real Product ID.
+        const realProductId = item.id.substring(0, 36);
+
+        return {
+            order_id: order.id,
+            product_id: realProductId, 
+            quantity: item.quantity,
+            price: item.price,
+        };
+      });
 
       const { error: itemsError } = await supabase.from("order_items").insert(itemsPayload);
 
       if (itemsError) throw itemsError;
 
-      // Cleanup & Redirect
       clearCart();
       router.push(`/order-success?orderId=${order.id}`);
       
-      // Fallback redirect
       setTimeout(() => {
          window.location.href = `/order-success?orderId=${order.id}`; 
       }, 100);
 
     } catch (err: any) {
-      console.error("Order Error:", err);
-      setErrorMsg(err.message || "Order failed. Please try again.");
+      console.error("Order Error Details:", JSON.stringify(err, null, 2)); 
+      const message = err.message || "Order failed. Please try again.";
+      setErrorMsg(message);
     } finally {
       setLoading(false);
     }
@@ -161,7 +152,7 @@ function CheckoutContent() {
   if (items.length === 0) {
      return (
         <div className="min-h-screen flex items-center justify-center">
-            <p>Your cart is empty. Redirecting...</p>
+           <p>Your cart is empty. Redirecting...</p>
         </div>
      )
   }
@@ -170,7 +161,6 @@ function CheckoutContent() {
     <main className="min-h-screen bg-[#f8f9fa] py-10 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-7xl mx-auto">
         
-        {/* PROGRESS BAR */}
         <div className="flex justify-center mb-12">
             <div className="flex items-center gap-4 text-sm font-medium">
                 <span className="text-gray-400 flex items-center gap-2">
@@ -190,9 +180,7 @@ function CheckoutContent() {
 
         <div className="grid lg:grid-cols-12 gap-10">
           
-          {/* FORM COLUMN */}
           <div className="lg:col-span-7 space-y-8">
-            
             <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
                 <h1 className="text-2xl font-serif font-bold text-gray-900 mb-6">Shipping Information</h1>
                 
@@ -241,7 +229,7 @@ function CheckoutContent() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                         <div className="md:col-span-2 space-y-2">
+                          <div className="md:col-span-2 space-y-2">
                             <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                                 <MapPin className="w-4 h-4" /> Street Address*
                             </label>
@@ -265,7 +253,6 @@ function CheckoutContent() {
                 </form>
             </div>
 
-            {/* LIFECYCLE PREVIEW */}
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 opacity-80 grayscale-[0.5]">
                  <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Order Lifecycle Preview</h3>
                  <div className="flex items-center justify-between relative">
@@ -293,7 +280,6 @@ function CheckoutContent() {
             </div>
           </div>
 
-          {/* SUMMARY COLUMN */}
           <div className="lg:col-span-5">
             <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 sticky top-6">
                 <h2 className="text-xl font-serif font-bold text-gray-900 mb-6 pb-4 border-b">Order Summary</h2>
@@ -302,7 +288,6 @@ function CheckoutContent() {
                     {items.map((item) => (
                         <div key={item.id} className="flex gap-4">
                             <div className="w-14 h-14 bg-gray-100 rounded-md overflow-hidden shrink-0">
-                                {/* FIX: Add || "" to convert null to an empty string for TypeScript */}
                                 <img 
                                     src={item.image || ""} 
                                     alt={item.title || "Product"}
@@ -388,8 +373,6 @@ function CheckoutContent() {
   );
 }
 
-// 2. EXPORT THE PAGE WRAPPED IN SUSPENSE
-// This fixes the Next.js build error related to useSearchParams
 export default function CheckoutPage() {
   return (
     <Suspense fallback={

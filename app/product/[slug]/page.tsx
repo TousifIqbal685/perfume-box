@@ -13,9 +13,9 @@ export default async function ProductPage(props: any) {
     .from("products")
     .select(`
       id, title, brand, description, price, discounted_price, price_5ml, price_10ml,
-      stock, top_notes, heart_notes, base_notes, main_image_url, slug,
+      stock, top_notes, heart_notes, base_notes, main_image_url, slug, volume_ml,
       product_images ( id, image_url )
-    `)
+    `) // ^ ADDED volume_ml HERE
     .eq("slug", slug)
     .single();
 
@@ -35,7 +35,6 @@ export default async function ProductPage(props: any) {
       <ProductClient product={product} price={price} relatedProducts={[]} />
 
       {/* 4. Add the Dynamic Product Feed below */}
-      {/* UPDATED: Removed max-w container to allow full width grid */}
       <div className="bg-white border-t border-gray-100 w-full px-2 md:px-6 pb-20">
         <div className="pt-16">
           <h2 className="text-2xl md:text-3xl font-serif font-bold text-gray-900 mb-8 text-center md:text-left px-2">

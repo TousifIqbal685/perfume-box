@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext"; 
+import { supabase } from "@/supabaseClient"; // Import Supabase
 
 export default function RecentlyViewed() {
   const [products, setProducts] = useState<any[]>([]);
@@ -13,10 +14,38 @@ export default function RecentlyViewed() {
 
   useEffect(() => {
     setMounted(true);
-    const stored = localStorage.getItem("recentlyViewed");
-    if (stored) {
-      setProducts(JSON.parse(stored));
-    }
+    
+    const fetchValidProducts = async () => {
+      const stored = localStorage.getItem("recentlyViewed");
+      if (stored) {
+        const localItems = JSON.parse(stored);
+        const localIds = localItems.map((item: any) => item.id);
+
+        if (localIds.length > 0) {
+          // 1. Fetch only products that still exist in DB
+          const { data: validProducts } = await supabase
+            .from("products")
+            .select("id, title, brand, price, discounted_price, main_image_url, slug, volume_ml, price_5ml, price_10ml") // Added decant pricing fields
+            .in("id", localIds)
+            .eq("is_visible", true); // Optional: also hide if not visible
+
+          if (validProducts) {
+            // 2. Sort them to match the order in localStorage (most recent first)
+            // validProducts comes back in random order from DB
+            const sortedValid = localItems
+              .filter((localItem: any) => validProducts.find((vp) => vp.id === localItem.id))
+              .map((localItem: any) => validProducts.find((vp) => vp.id === localItem.id));
+
+            setProducts(sortedValid);
+            
+            // 3. Update localStorage to remove dead items
+            localStorage.setItem("recentlyViewed", JSON.stringify(sortedValid));
+          }
+        }
+      }
+    };
+
+    fetchValidProducts();
   }, []);
 
   const scroll = (direction: 'left' | 'right') => {
@@ -42,7 +71,6 @@ export default function RecentlyViewed() {
         title: item.title,
         price: activePrice,
         image: item.main_image_url,
-        // quantity: 1 <-- REMOVED THIS LINE
     });
     openCart();
   };

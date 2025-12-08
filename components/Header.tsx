@@ -96,13 +96,13 @@ export default function Header() {
                 alt="Logo"
               />
               <span className="text-xl md:text-2xl font-bold font-serif tracking-tight text-gray-900">
-                PERFUME BOX
+                PERFUME BOX BD 
               </span>
             </Link>
           </div>
 
-          {/* 2. CENTER: SEARCH BAR (Professional & Wide) */}
-          <div className="hidden md:flex flex-1 max-w-2xl mx-12 justify-center relative" ref={searchContainerRef}>
+          {/* 2. CENTER: SEARCH BAR */}
+          <div className="hidden md:flex flex-1 max-w-lg mx-8 justify-center relative" ref={searchContainerRef}>
             <div className="relative w-full group">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <Search className="h-5 w-5 text-gray-400 group-focus-within:text-black transition-colors" />
@@ -145,8 +145,9 @@ export default function Header() {
           <div className="flex items-center gap-6 md:gap-8">
             
             {/* Desktop Nav Links (Hidden on Mobile) */}
-            <div className="hidden lg:flex items-center gap-8 mr-4">
-               {["ALL", "MEN", "WOMEN", "UNISEX"].map((item) => (
+            <div className="hidden lg:flex items-center gap-6 xl:gap-8 mr-2">
+               {/* Added NICHE here to the array */}
+               {["ALL", "MEN", "WOMEN", "UNISEX", "NICHE"].map((item) => (
                  <Link 
                    key={item} 
                    href={`/products/${item.toLowerCase()}`} 
@@ -248,7 +249,7 @@ export default function Header() {
                 { name: "MEN", path: "/products/men" },
                 { name: "WOMEN", path: "/products/women" },
                 { name: "UNISEX", path: "/products/unisex" },
-                { name: "BODY SPRAY", path: "/products/body-spray" }
+                { name: "NICHE", path: "/products/niche" }, // Removed Highlight
               ].map((link) => (
                 <Link
                   key={link.path}

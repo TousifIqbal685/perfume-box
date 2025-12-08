@@ -4,29 +4,43 @@ export const revalidate = 0;
 
 import { supabase } from "@/supabaseClient";
 import Link from "next/link";
-import ProductFeed from "@/components/ProductFeed"; // Ensure this import is correct
+import ProductFeed from "@/components/ProductFeed"; 
 
 const CATEGORY_MAP: any = {
   men: "e06e7a2b-2f05-4baa-90da-1573d82ae74b",
   women: "2ceb546a-4940-448a-9987-83870d2638f3",
   unisex: "243e4b4a-aa06-4679-9c7e-bd96db02de34",
-  "body-spray": "7741f377-e4f5-45e8-b49b-9f2765c2ea60",
+  "car-perfume": "7741f377-e4f5-45e8-b49b-9f2765c2ea60", 
   all: null,
 };
 
 export default async function ProductsPage({ params }: any) {
   const { category: urlCategory } = await params;
-  const categoryId = CATEGORY_MAP[urlCategory];
+  
+  // Clean up the category string
+  const categorySlug = decodeURIComponent(urlCategory).toLowerCase().trim();
 
+  // Start building the query
   let query = supabase
     .from("products")
     .select(
-      "id, title, brand, slug, price, discounted_price, main_image_url, stock, category_id, created_at"
+      "id, title, brand, slug, price, discounted_price, main_image_url, stock, category_id, created_at, volume_ml, perfume_type"
     )
     .order('created_at', { ascending: false });
 
-  if (categoryId) {
-    query = query.eq("category_id", categoryId);
+  // --- FILTERING LOGIC ---
+  // UPDATED: Now checks for 'designer' and 'arabian' in addition to 'niche'
+  if (['niche', 'designer', 'arabian'].includes(categorySlug)) {
+    // 1. PERFUME TYPES: Filter by the 'perfume_type' column
+    query = query.ilike("perfume_type", categorySlug);
+  } 
+  else if (CATEGORY_MAP[categorySlug]) {
+    // 2. STANDARD CATEGORIES: Filter by UUID from the map
+    query = query.eq("category_id", CATEGORY_MAP[categorySlug]);
+  } 
+  else if (categorySlug !== 'all') {
+    // 3. INVALID CATEGORY
+    query = query.eq("id", "00000000-0000-0000-0000-000000000000"); // Hack to return empty
   }
 
   const { data: products, error } = await query;
@@ -40,9 +54,9 @@ export default async function ProductsPage({ params }: any) {
     return (
       <main className="bg-white min-h-screen px-4 py-16 text-center">
         <h1 className="text-3xl font-bold text-gray-800 mb-4 capitalize">
-          {urlCategory === "all"
+          {categorySlug === "all"
             ? "No products available"
-            : `No ${urlCategory.replace("-", " ")} products available`}
+            : `No ${categorySlug.replace("-", " ")} products available`}
         </h1>
         <p className="text-gray-500 mb-6">Sorry, nothing to show right now.</p>
         <Link
@@ -56,16 +70,14 @@ export default async function ProductsPage({ params }: any) {
   }
 
   // --- MAIN FEED ---
-  // UPDATED: Used w-full and px-2 (small padding) to allow the grid to fill the screen
   return (
     <main className="bg-white min-h-screen w-full px-2 md:px-6 py-8">
       <h1 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 text-center mb-2 capitalize">
-        {urlCategory === "all" ? "All Products" : `${urlCategory} Collection`}
+        {categorySlug === "all" ? "All Products" : `${categorySlug.replace("-", " ")} Collection`}
       </h1>
 
-      <div className="w-16 h-1 bg-gray-200 mx-auto mb-10 rounded-full"></div>
+      <div className="w-16 h-1 bg-gray-200 mx-auto mb-2 rounded-full"></div>
 
-      {/* This component handles the 2-column mobile / 5-column desktop grid */}
       <ProductFeed initialProducts={products} />
     </main>
   );
