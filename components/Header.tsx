@@ -69,6 +69,16 @@ export default function Header() {
     router.push(`/product/${slug}`);
   };
 
+  // --- NEW: Handle Enter Key to Redirect with Search Param ---
+  const handleSearchSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && search.trim()) {
+        e.preventDefault();
+        router.push(`/products/all?search=${encodeURIComponent(search.trim())}`);
+        setResults([]); // Close dropdown
+        setMobileOpen(false); // Close mobile menu
+    }
+  };
+
   return (
     <>
       <AuthModal open={showLoginPopup} onClose={() => setShowLoginPopup(false)} />
@@ -111,6 +121,7 @@ export default function Header() {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={handleSearchSubmit} // <--- ADDED HERE
                 className="block w-full pl-11 pr-4 py-3 bg-gray-50 border border-transparent rounded-full text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-50 transition-all duration-300 shadow-inner"
                 placeholder="Search for scents, brands..."
               />
@@ -146,7 +157,6 @@ export default function Header() {
             
             {/* Desktop Nav Links (Hidden on Mobile) */}
             <div className="hidden lg:flex items-center gap-6 xl:gap-8 mr-2">
-               {/* Added NICHE here to the array */}
                {["ALL", "MEN", "WOMEN", "UNISEX", "NICHE"].map((item) => (
                  <Link 
                    key={item} 
@@ -199,6 +209,7 @@ export default function Header() {
                 <input
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
+                    onKeyDown={handleSearchSubmit} // <--- ADDED HERE
                     className="block w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:bg-white focus:border-gray-300 focus:ring-2 focus:ring-gray-100 transition-all"
                     placeholder="Search perfumes..."
                 />

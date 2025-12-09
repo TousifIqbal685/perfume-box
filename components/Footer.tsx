@@ -6,6 +6,12 @@ import { Facebook, Instagram, MessageCircle, MapPin, MessageSquare, Smartphone }
 export default function Footer() {
   const year = new Date().getFullYear();
 
+  // --- HELPER FUNCTION FOR PLACEHOLDERS ---
+  const handleComingSoon = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevents navigation
+    alert("Coming Soon! We are currently working on this page.");
+  };
+
   return (
     <footer className="bg-black text-white font-sans border-t-4 border-[#f525bd]">
       
@@ -13,15 +19,24 @@ export default function Footer() {
       <div className="border-b border-gray-800">
         <div className="max-w-[1400px] mx-auto px-6 py-6 flex flex-wrap justify-center md:justify-between gap-6 text-sm font-medium tracking-wide">
           <div className="flex items-center gap-6">
-            <span className="flex items-center gap-2 cursor-pointer hover:text-[#f525bd] transition duration-300">
+            <span 
+                onClick={handleComingSoon}
+                className="flex items-center gap-2 cursor-pointer hover:text-[#f525bd] transition duration-300"
+            >
               <MapPin className="w-5 h-5" /> Find a Store
             </span>
-            <span className="flex items-center gap-2 cursor-pointer hover:text-[#f525bd] transition duration-300">
+            <span 
+                onClick={handleComingSoon}
+                className="flex items-center gap-2 cursor-pointer hover:text-[#f525bd] transition duration-300"
+            >
               <MessageSquare className="w-5 h-5" /> Customer Service
             </span>
           </div>
           <div className="flex items-center gap-6">
-            <span className="flex items-center gap-2 cursor-pointer hover:text-[#f525bd] transition duration-300">
+            <span 
+                onClick={handleComingSoon}
+                className="flex items-center gap-2 cursor-pointer hover:text-[#f525bd] transition duration-300"
+            >
               <Smartphone className="w-5 h-5" /> Get the App
             </span>
           </div>
@@ -31,15 +46,15 @@ export default function Footer() {
       {/* 2. MAIN CONTENT GRID */}
       <div className="max-w-[1400px] mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
         
-        {/* COL 1: ABOUT */}
+        {/* COL 1: ABOUT (All placeholders) */}
         <div>
           <h3 className="text-base font-bold uppercase tracking-widest mb-6">About Perfume Box</h3>
           <ul className="space-y-3 text-sm text-gray-300">
-            <li><Link href="/about" className="hover:text-[#f525bd] transition duration-300">Our Story</Link></li>
-            <li><Link href="/authenticity" className="hover:text-[#f525bd] transition duration-300">Authenticity Guarantee</Link></li>
-            <li><Link href="/careers" className="hover:text-[#f525bd] transition duration-300">Careers</Link></li>
-            <li><Link href="/terms" className="hover:text-[#f525bd] transition duration-300">Terms of Use</Link></li>
-            <li><Link href="/privacy" className="hover:text-[#f525bd] transition duration-300">Privacy Policy</Link></li>
+            <li><Link href="#" onClick={handleComingSoon} className="hover:text-[#f525bd] transition duration-300">Our Story</Link></li>
+            <li><Link href="#" onClick={handleComingSoon} className="hover:text-[#f525bd] transition duration-300">Authenticity Guarantee</Link></li>
+            <li><Link href="#" onClick={handleComingSoon} className="hover:text-[#f525bd] transition duration-300">Careers</Link></li>
+            <li><Link href="#" onClick={handleComingSoon} className="hover:text-[#f525bd] transition duration-300">Terms of Use</Link></li>
+            <li><Link href="#" onClick={handleComingSoon} className="hover:text-[#f525bd] transition duration-300">Privacy Policy</Link></li>
           </ul>
         </div>
 
@@ -47,23 +62,24 @@ export default function Footer() {
         <div>
           <h3 className="text-base font-bold uppercase tracking-widest mb-6">Help & Support</h3>
           <ul className="space-y-3 text-sm text-gray-300">
-            <li><Link href="/shipping" className="hover:text-[#f525bd] transition duration-300">Shipping & Delivery</Link></li>
-            <li><Link href="/returns" className="hover:text-[#f525bd] transition duration-300">Returns & Exchanges</Link></li>
+            <li><Link href="#" onClick={handleComingSoon} className="hover:text-[#f525bd] transition duration-300">Shipping & Delivery</Link></li>
+            <li><Link href="#" onClick={handleComingSoon} className="hover:text-[#f525bd] transition duration-300">Returns & Exchanges</Link></li>
             
+            {/* WORKING LINK */}
             <li><Link href="/contact" className="hover:text-[#f525bd] transition duration-300">Contact Us</Link></li>
 
-            <li><Link href="/faq" className="hover:text-[#f525bd] transition duration-300">FAQs</Link></li>
+            <li><Link href="#" onClick={handleComingSoon} className="hover:text-[#f525bd] transition duration-300">FAQs</Link></li>
             
-            {/* TRACK ORDER */}
+            {/* WORKING LINK */}
             <li>
-                <Link href="/order-status" className="flex items-center gap-2 hover:text-[#f525bd] transition duration-300 font-medium">
+                <Link href="/order-success" className="flex items-center gap-2 hover:text-[#f525bd] transition duration-300 font-medium">
                     Track Your Order
                 </Link>
             </li>
           </ul>
         </div>
 
-        {/* COL 3: SHOP */}
+        {/* COL 3: SHOP (All Working) */}
         <div>
           <h3 className="text-base font-bold uppercase tracking-widest mb-6">Shop Collection</h3>
           <ul className="space-y-3 text-sm text-gray-300">
@@ -75,7 +91,7 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* COL 4: NEWSLETTER */}
+        {/* COL 4: NEWSLETTER (Placeholder) */}
         <div className="lg:pl-8">
           <h2 className="font-serif text-3xl md:text-4xl leading-tight mb-4 text-white">
             We Belong to Something <span className="italic text-[#f525bd]">Beautiful</span>
@@ -84,13 +100,16 @@ export default function Footer() {
             Sign up for Perfume Box emails and get the first look at new arrivals and exclusive offers.
           </p>
           
-          <form className="flex flex-col gap-3">
+          <form className="flex flex-col gap-3" onSubmit={(e) => e.preventDefault()}>
             <input 
               type="email" 
               placeholder="Enter your email address" 
               className="bg-white text-black px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f525bd] w-full"
             />
-            <button className="bg-transparent border border-white text-white px-6 py-3 rounded-md font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300">
+            <button 
+                onClick={handleComingSoon}
+                className="bg-transparent border border-white text-white px-6 py-3 rounded-md font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300"
+            >
               Sign Up
             </button>
           </form>
