@@ -133,20 +133,28 @@ export default function Home() {
           className="w-full h-full object-cover object-center"
         />
         
-        {/* Darker Overlay */}
-        <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white text-center px-4">
-          <h1 
-            className="text-5xl md:text-7xl font-serif font-bold tracking-tight drop-shadow-lg max-w-4xl leading-tight"
-            style={{ 
-                color: "black", 
-                textShadow: "2px 2px 0px #f525bd, -1px -1px 0 #f525bd" // Strong Pink Shadow
-            }}
-          >
-            PERFUME BOX <br /> BANGLADESH
-          </h1>
-          <p className="text-lg md:text-xl mt-6 italic font-light opacity-90 max-w-2xl text-gray-100">
-            Luxury you can smell
-          </p>
+        {/* INCREASED DARKNESS OVERLAY: changed from bg-gradient-to-t to a solid darker bg-black/50 */}
+          <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white text-center px-4">
+            <h1 
+                className="text-5xl md:text-7xl font-serif font-bold tracking-tight max-w-4xl leading-tight"
+                style={{ 
+                    color: "black", 
+                    // Premium Golden Outline & Shadow Effect
+                    textShadow: "2px 2px 0px #D4AF37, -1px -1px 0 #D4AF37, 0 0 15px rgba(212, 175, 55, 0.8)" 
+                }}
+              >
+                PERFUME BOX <br /> BANGLADESH
+              </h1>
+
+              <p 
+                className="text-lg md:text-xl mt-6 italic font-light max-w-2xl"
+                style={{ 
+                    color: "#f8f8f8", 
+                    textShadow: "0px 2px 4px rgba(0,0,0,0.8)" // Subtle black drop shadow for readability
+                }}
+              >
+                Luxury you can smell
+              </p>
           
           <Link
             href="/products/all"
