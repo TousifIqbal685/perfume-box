@@ -1,14 +1,12 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react"; // 1. Import Suspense
 import { supabase } from "@/supabaseClient";
 import Link from "next/link";
 import BestSellers from "@/components/BestSellers";
 import RecentlyViewed from "@/components/RecentlyViewed";
 import PromoSection from "@/components/PromoSection";
 import ProductFeed from "@/components/ProductFeed";
-// Removed Chevron imports since buttons are gone
-// import { ChevronLeft, ChevronRight } from "lucide-react"; 
 
 export default function Home() {
   const [allProducts, setAllProducts] = useState<any[]>([]);
@@ -125,7 +123,8 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="bg-white min-h-screen">
+    <main className="bg-white min-h-screen overflow-x-hidden">
+      
       {/* HERO SECTION */}
       <section className="relative w-full h-[500px] md:h-[650px] overflow-hidden rounded-b-[2.5rem] shadow-xl mx-auto max-w-[1600px]">
         <img
@@ -133,29 +132,22 @@ export default function Home() {
           alt="Perfume Banner"
           className="w-full h-full object-cover object-center"
         />
-        {/* INCREASED DARKNESS OVERLAY: changed from bg-gradient-to-t to a solid darker bg-black/50 */}
-        <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white text-center px-4">
+        
+        {/* Darker Overlay */}
+        <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white text-center px-4">
           <h1 
-              className="text-5xl md:text-7xl font-serif font-bold tracking-tight max-w-4xl leading-tight"
-              style={{ 
-                  color: "black", 
-                  // Premium Golden Outline & Shadow Effect
-                  textShadow: "2px 2px 0px #D4AF37, -1px -1px 0 #D4AF37, 0 0 15px rgba(212, 175, 55, 0.8)" 
-              }}
-            >
-              PERFUME BOX <br /> BANGLADESH
-            </h1>
-
-            <p 
-              className="text-lg md:text-xl mt-6 italic font-light max-w-2xl"
-              style={{ 
-                  color: "#f8f8f8", 
-                  textShadow: "0px 2px 4px rgba(0,0,0,0.8)" // Subtle black drop shadow for readability
-              }}
-            >
-              Luxury you can smell
-            </p>
-          {/* PREMIUM BUTTON STYLE APPLIED */}
+            className="text-5xl md:text-7xl font-serif font-bold tracking-tight drop-shadow-lg max-w-4xl leading-tight"
+            style={{ 
+                color: "black", 
+                textShadow: "2px 2px 0px #f525bd, -1px -1px 0 #f525bd" // Strong Pink Shadow
+            }}
+          >
+            PERFUME BOX <br /> BANGLADESH
+          </h1>
+          <p className="text-lg md:text-xl mt-6 italic font-light opacity-90 max-w-2xl text-gray-100">
+            Luxury you can smell
+          </p>
+          
           <Link
             href="/products/all"
             className="mt-10 px-8 py-3 bg-white text-black text-sm md:text-base font-bold uppercase tracking-widest rounded-full hover:bg-pink-600 hover:text-white hover:border-transparent transition-all duration-300 shadow-xl transform hover:scale-105 inline-block"
@@ -167,7 +159,7 @@ export default function Home() {
 
       <RecentlyViewed />
 
-      {/* --- SWIPEABLE PROMO CAROUSEL (NO ARROWS) --- */}
+      {/* PROMO CAROUSEL */}
       <section className="w-full mt-10 px-4 select-none">
         <div 
             className="max-w-[1600px] mx-auto relative h-[350px] md:h-[500px] overflow-hidden rounded-2xl shadow-lg bg-gray-900 group cursor-grab active:cursor-grabbing"
@@ -192,7 +184,6 @@ export default function Home() {
                 alt={slide.title}
                 className="absolute inset-0 w-full h-full object-cover object-center opacity-70"
               />
-              
               <div className="relative z-20 text-center px-4 animate-in fade-in zoom-in duration-700 pointer-events-auto">
                 <h3 className="text-3xl md:text-5xl font-serif font-bold text-white drop-shadow-md mb-2">
                   {slide.title}
@@ -211,7 +202,6 @@ export default function Home() {
             </div>
           ))}
 
-          {/* Dots Indicator */}
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2 pointer-events-none">
             {carouselSlides.map((_, idx) => (
               <button
@@ -223,7 +213,6 @@ export default function Home() {
               />
             ))}
           </div>
-
         </div>
       </section>
       
@@ -231,13 +220,18 @@ export default function Home() {
 
       <BestSellers />
 
-      {/* PRODUCT FEED */}
+      {/* PRODUCT FEED - WRAPPED IN SUSPENSE FOR BUILD FIX */}
       <section className="py-16 bg-[#fdfdfd] px-4 md:px-10 border-t border-gray-100">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-serif font-bold text-gray-900">Explore All</h2>
           <div className="w-16 h-1 bg-pink-600 mx-auto my-4 rounded-full"></div>
         </div>
-        <ProductFeed initialProducts={allProducts} />
+        
+        {/* 2. Added Suspense Boundary Here */}
+        <Suspense fallback={<div className="text-center py-10">Loading products...</div>}>
+            <ProductFeed initialProducts={allProducts} />
+        </Suspense>
+        
       </section>
       
       {/* Featurette Section */}
