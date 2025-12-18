@@ -8,7 +8,7 @@ import CartDrawer from "@/components/CartDrawer";
 import type { Metadata, Viewport } from "next"; // 1. Import Viewport type
 
 export const metadata: Metadata = {
-  title: "Perfume Box | Signature Scents",
+  title: "Perfume Box | Luxury You Can Smell",
   description: "Authentic and Premium Perfumes in Bangladesh. Discover luxury.",
 };
 
