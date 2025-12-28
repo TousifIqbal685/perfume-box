@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Facebook, Instagram, MessageCircle, MapPin, MessageSquare, Smartphone } from "lucide-react";
+import { Facebook, Instagram, MessageCircle, MapPin, MessageSquare, Smartphone, Phone } from "lucide-react";
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -12,13 +12,43 @@ export default function Footer() {
     alert("Coming Soon! We are currently working on this page.");
   };
 
+  // --- NEW FUNCTION: COPY PHONE NUMBER ---
+  const handleCopyNumber = (number: string) => {
+    navigator.clipboard.writeText(number);
+    alert(`Copied ${number} to clipboard!`);
+  };
+
   return (
     <footer className="bg-black text-white font-sans border-t-4 border-[#f525bd]">
       
       {/* 1. TOP ACTION BAR */}
       <div className="border-b border-gray-800">
-        <div className="max-w-[1400px] mx-auto px-6 py-6 flex flex-wrap justify-center md:justify-between gap-6 text-sm font-medium tracking-wide">
-          <div className="flex items-center gap-6">
+        <div className="max-w-[1400px] mx-auto px-6 py-6 flex flex-wrap justify-center md:justify-between items-center gap-6 text-sm font-medium tracking-wide">
+          
+          <div className="flex items-center gap-8">
+            
+            {/* --- NEW SECTION: CONTACT US --- */}
+            <div className="flex flex-col items-start">
+                <span className="flex items-center gap-2 text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">
+                    <Phone className="w-4 h-4" /> Contact Us
+                </span>
+                <div className="flex flex-col text-xs">
+                    <span 
+                        onClick={() => handleCopyNumber("01719047858")}
+                        className="cursor-pointer hover:text-[#f525bd] transition duration-300"
+                    >
+                        01719047858
+                    </span>
+                    <span 
+                        onClick={() => handleCopyNumber("01609418266")}
+                        className="cursor-pointer hover:text-[#f525bd] transition duration-300 mt-1"
+                    >
+                        01609418266
+                    </span>
+                </div>
+            </div>
+            {/* ------------------------------- */}
+
             <span 
                 onClick={handleComingSoon}
                 className="flex items-center gap-2 cursor-pointer hover:text-[#f525bd] transition duration-300"
@@ -32,6 +62,7 @@ export default function Footer() {
               <MessageSquare className="w-5 h-5" /> Customer Service
             </span>
           </div>
+
           <div className="flex items-center gap-6">
             <span 
                 onClick={handleComingSoon}

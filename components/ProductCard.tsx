@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image"; // Import Image
 import { useCart } from "@/context/CartContext"; 
 import { useState } from "react";
 
@@ -22,17 +23,14 @@ export default function ProductCard({ product }: { product: any }) {
     ? Math.round(((product.price - product.discounted_price) / product.price) * 100)
     : 0;
 
-  // --- CRITICAL FIX: GENERATE UNIQUE CART ITEM ---
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault(); 
     e.stopPropagation();
     
-    // 1. UNIQUE ID GENERATION
     const uniqueId = selectedSize === "full" 
       ? product.id 
       : `${product.id}-${selectedSize}`;
 
-    // 2. UNIQUE TITLE GENERATION
     const uniqueTitle = selectedSize === "full"
       ? product.title
       : `${product.title} (${selectedSize} Decant)`;
@@ -57,16 +55,22 @@ export default function ProductCard({ product }: { product: any }) {
       className="group block bg-white rounded-md overflow-hidden hover:shadow-xl transition-all duration-300 relative"
     >
       
-      {/* IMAGE CONTAINER */}
+      {/* IMAGE CONTAINER OPTIMIZED */}
       <div className="relative aspect-[4/5] bg-[#f8f8f8] flex items-center justify-center overflow-hidden">
-        <img
-          src={product.main_image_url}
-          alt={product.title}
-          className="h-full w-full object-cover mix-blend-multiply transition-transform duration-700 group-hover:scale-105"
-        />
+        {product.main_image_url ? (
+          <Image
+            src={product.main_image_url}
+            alt={product.title}
+            fill
+            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+            className="object-cover mix-blend-multiply transition-transform duration-700 group-hover:scale-105"
+          />
+        ) : (
+          <div className="text-gray-300">No Image</div>
+        )}
         
         {hasDiscount && (
-          <span className="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-sm uppercase tracking-wider">
+          <span className="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-sm uppercase tracking-wider z-10">
             -{discountPercent}%
           </span>
         )}

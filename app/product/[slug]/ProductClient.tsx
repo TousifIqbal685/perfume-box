@@ -132,7 +132,7 @@ export default function ProductClient({ product, price: initialPrice, relatedPro
               )}
             </div>
 
-            <div className="text-sm text-gray-600 leading-relaxed mb-4 max-h-[100px] overflow-y-auto no-scrollbar">
+            <div className="text-sm text-gray-600 leading-relaxed mb-6">
               <p>{product.description}</p>
             </div>
 
@@ -203,7 +203,7 @@ export default function ProductClient({ product, price: initialPrice, relatedPro
                 {product.stock > 0 ? "In Stock & Ready to Ship" : "Out of Stock"}
               </p>
               <p>• 100% Authentic Guaranteed</p>
-              <p>• Free shipping on orders over ৳5,000</p>
+              <p>• Free shipping on orders over ৳20,000</p>
             </div>
           </div>
         </div>
