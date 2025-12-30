@@ -1,10 +1,19 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useUser } from "@/context/UserContext";
+import AuthModal from "./AuthModal"; // Importing the Auth Modal
 import { Facebook, Instagram, MessageCircle, MapPin, MessageSquare, Smartphone, Phone } from "lucide-react";
 
 export default function Footer() {
   const year = new Date().getFullYear();
+  const router = useRouter();
+  const { user } = useUser();
+  
+  // --- STATE FOR AUTH MODAL ---
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
 
   // --- HELPER FUNCTION FOR PLACEHOLDERS ---
   const handleComingSoon = (e: React.MouseEvent) => {
@@ -18,171 +27,185 @@ export default function Footer() {
     alert(`Copied ${number} to clipboard!`);
   };
 
+  // --- HANDLE SIGN UP CLICK ---
+  const handleSignUpClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (user) {
+        // If already logged in, go to profile
+        router.push("/profile");
+    } else {
+        // Open the Login/Signup Popup
+        setShowLoginPopup(true);
+    }
+  };
+
   return (
-    <footer className="bg-black text-white font-sans border-t-4 border-[#f525bd]">
-      
-      {/* 1. TOP ACTION BAR */}
-      <div className="border-b border-gray-800">
-        <div className="max-w-[1400px] mx-auto px-6 py-6 flex flex-wrap justify-center md:justify-between items-center gap-6 text-sm font-medium tracking-wide">
-          
-          <div className="flex items-center gap-8">
-            
-            {/* --- NEW SECTION: CONTACT US --- */}
-            <div className="flex flex-col items-start">
-                <span className="flex items-center gap-2 text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">
-                    <Phone className="w-4 h-4" /> Contact Us
-                </span>
-                <div className="flex flex-col text-xs">
-                    <span 
-                        onClick={() => handleCopyNumber("01719047858")}
-                        className="cursor-pointer hover:text-[#f525bd] transition duration-300"
-                    >
-                        01719047858
-                    </span>
-                    <span 
-                        onClick={() => handleCopyNumber("01609418266")}
-                        className="cursor-pointer hover:text-[#f525bd] transition duration-300 mt-1"
-                    >
-                        01609418266
-                    </span>
-                </div>
-            </div>
-            {/* ------------------------------- */}
+    <>
+      {/* Include the AuthModal here so it can open from Footer */}
+      <AuthModal open={showLoginPopup} onClose={() => setShowLoginPopup(false)} />
 
-            <span 
-                onClick={handleComingSoon}
-                className="flex items-center gap-2 cursor-pointer hover:text-[#f525bd] transition duration-300"
-            >
-              <MapPin className="w-5 h-5" /> Find a Store
-            </span>
-            <span 
-                onClick={handleComingSoon}
-                className="flex items-center gap-2 cursor-pointer hover:text-[#f525bd] transition duration-300"
-            >
-              <MessageSquare className="w-5 h-5" /> Customer Service
-            </span>
-          </div>
-
-          <div className="flex items-center gap-6">
-            <span 
-                onClick={handleComingSoon}
-                className="flex items-center gap-2 cursor-pointer hover:text-[#f525bd] transition duration-300"
-            >
-              <Smartphone className="w-5 h-5" /> Get the App
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* 2. MAIN CONTENT GRID */}
-      <div className="max-w-[1400px] mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+      <footer className="bg-black text-white font-sans border-t-4 border-[#f525bd]">
         
-        {/* COL 1: ABOUT (All placeholders) */}
-        <div>
-          <h3 className="text-base font-bold uppercase tracking-widest mb-6">About Perfume Box</h3>
-          <ul className="space-y-3 text-sm text-gray-300">
-            <li><Link href="#" onClick={handleComingSoon} className="hover:text-[#f525bd] transition duration-300">Our Story</Link></li>
-            <li><Link href="#" onClick={handleComingSoon} className="hover:text-[#f525bd] transition duration-300">Authenticity Guarantee</Link></li>
-            <li><Link href="#" onClick={handleComingSoon} className="hover:text-[#f525bd] transition duration-300">Careers</Link></li>
-            <li><Link href="#" onClick={handleComingSoon} className="hover:text-[#f525bd] transition duration-300">Terms of Use</Link></li>
-            <li><Link href="#" onClick={handleComingSoon} className="hover:text-[#f525bd] transition duration-300">Privacy Policy</Link></li>
-          </ul>
-        </div>
-
-        {/* COL 2: HELP */}
-        <div>
-          <h3 className="text-base font-bold uppercase tracking-widest mb-6">Help & Support</h3>
-          <ul className="space-y-3 text-sm text-gray-300">
-            <li><Link href="#" onClick={handleComingSoon} className="hover:text-[#f525bd] transition duration-300">Shipping & Delivery</Link></li>
-            <li><Link href="#" onClick={handleComingSoon} className="hover:text-[#f525bd] transition duration-300">Returns & Exchanges</Link></li>
+        {/* 1. TOP ACTION BAR */}
+        <div className="border-b border-gray-800">
+          <div className="max-w-[1400px] mx-auto px-6 py-6 flex flex-wrap justify-center md:justify-between items-center gap-6 text-sm font-medium tracking-wide">
             
-            {/* WORKING LINK */}
-            <li><Link href="/contact" className="hover:text-[#f525bd] transition duration-300">Contact Us</Link></li>
+            <div className="flex items-center gap-8">
+              
+              {/* --- NEW SECTION: CONTACT US --- */}
+              <div className="flex flex-col items-start">
+                  <span className="flex items-center gap-2 text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">
+                      <Phone className="w-4 h-4" /> Contact Us
+                  </span>
+                  <div className="flex flex-col text-xs">
+                      <span 
+                          onClick={() => handleCopyNumber("01719047858")}
+                          className="cursor-pointer hover:text-[#f525bd] transition duration-300"
+                      >
+                          01719047858
+                      </span>
+                      <span 
+                          onClick={() => handleCopyNumber("01609418266")}
+                          className="cursor-pointer hover:text-[#f525bd] transition duration-300 mt-1"
+                      >
+                          01609418266
+                      </span>
+                  </div>
+              </div>
+              {/* ------------------------------- */}
 
-            <li><Link href="#" onClick={handleComingSoon} className="hover:text-[#f525bd] transition duration-300">FAQs</Link></li>
-            
-            {/* WORKING LINK */}
-            <li>
-                <Link href="/order-success" className="flex items-center gap-2 hover:text-[#f525bd] transition duration-300 font-medium">
-                    Track Your Order
-                </Link>
-            </li>
-          </ul>
-        </div>
+              <span 
+                  onClick={handleComingSoon}
+                  className="flex items-center gap-2 cursor-pointer hover:text-[#f525bd] transition duration-300"
+              >
+                <MapPin className="w-5 h-5" /> Find a Store
+              </span>
+              <span 
+                  onClick={handleComingSoon}
+                  className="flex items-center gap-2 cursor-pointer hover:text-[#f525bd] transition duration-300"
+              >
+                <MessageSquare className="w-5 h-5" /> Customer Service
+              </span>
+            </div>
 
-        {/* COL 3: SHOP (All Working) */}
-        <div>
-          <h3 className="text-base font-bold uppercase tracking-widest mb-6">Shop Collection</h3>
-          <ul className="space-y-3 text-sm text-gray-300">
-            <li><Link href="/products/men" className="hover:text-[#f525bd] transition duration-300">Men's Fragrance</Link></li>
-            <li><Link href="/products/women" className="hover:text-[#f525bd] transition duration-300">Women's Fragrance</Link></li>
-            <li><Link href="/products/unisex" className="hover:text-[#f525bd] transition duration-300">Unisex Collection</Link></li>
-            <li><Link href="/products/car-perfume" className="hover:text-[#f525bd] transition duration-300">Car Perfumes</Link></li>
-            <li><Link href="/products/all" className="hover:text-[#f525bd] transition duration-300">New Arrivals</Link></li>
-          </ul>
-        </div>
-
-        {/* COL 4: NEWSLETTER (Placeholder) */}
-        <div className="lg:pl-8">
-          <h2 className="font-serif text-3xl md:text-4xl leading-tight mb-4 text-white">
-            We Belong to Something <span className="italic text-[#f525bd]">Beautiful</span>
-          </h2>
-          <p className="text-gray-400 text-sm mb-6">
-            Sign up for Perfume Box emails and get the first look at new arrivals and exclusive offers.
-          </p>
-          
-          <form className="flex flex-col gap-3" onSubmit={(e) => e.preventDefault()}>
-            <input 
-              type="email" 
-              placeholder="Enter your email address" 
-              className="bg-white text-black px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f525bd] w-full"
-            />
-            <button 
-                onClick={handleComingSoon}
-                className="bg-transparent border border-white text-white px-6 py-3 rounded-md font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300"
-            >
-              Sign Up
-            </button>
-          </form>
-        </div>
-
-      </div>
-
-      {/* 3. BOTTOM BAR */}
-      <div className="bg-gray-900 border-t border-gray-800">
-        <div className="max-w-[1400px] mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-8">
-          
-          <div className="flex flex-col md:flex-row items-center gap-6">
-            <img 
-              src="/logo.jpg" 
-              alt="Perfume Box Logo" 
-              className="w-14 h-14 rounded-full object-cover border border-gray-700 shadow-sm opacity-90 hover:opacity-100 transition-opacity"
-            />
-            <div className="text-xs text-gray-500 text-center md:text-left">
-              <p>© {year} Perfume Box Bangladesh. All rights reserved.</p>
-              <p className="mt-1 opacity-75">100% Authentic Products. Sourced from Dubai, USA & UK.</p>
+            <div className="flex items-center gap-6">
+              <span 
+                  onClick={handleComingSoon}
+                  className="flex items-center gap-2 cursor-pointer hover:text-[#f525bd] transition duration-300"
+              >
+                <Smartphone className="w-5 h-5" /> Get the App
+              </span>
             </div>
           </div>
+        </div>
 
-          <div className="flex items-center gap-8">
-            <a href="https://www.facebook.com/profile.php?id=61561883782700" target="_blank" rel="noreferrer" className="group flex flex-col items-center gap-1 hover:text-[#f525bd] transition-colors">
-              <Facebook className="w-6 h-6" />
-              <span className="text-[10px] font-bold tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity">Facebook</span>
-            </a>
+        {/* 2. MAIN CONTENT GRID */}
+        <div className="max-w-[1400px] mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+          
+          {/* COL 1: ABOUT */}
+          <div>
+            <h3 className="text-base font-bold uppercase tracking-widest mb-6">About Perfume Box</h3>
+            <ul className="space-y-3 text-sm text-gray-300">
+              <li><Link href="#" onClick={handleComingSoon} className="hover:text-[#f525bd] transition duration-300">Our Story</Link></li>
+              <li><Link href="#" onClick={handleComingSoon} className="hover:text-[#f525bd] transition duration-300">Authenticity Guarantee</Link></li>
+              <li><Link href="#" onClick={handleComingSoon} className="hover:text-[#f525bd] transition duration-300">Careers</Link></li>
+              <li><Link href="#" onClick={handleComingSoon} className="hover:text-[#f525bd] transition duration-300">Terms of Use</Link></li>
+              <li><Link href="#" onClick={handleComingSoon} className="hover:text-[#f525bd] transition duration-300">Privacy Policy</Link></li>
+            </ul>
+          </div>
 
-            <a href="https://www.instagram.com/perfumeboxbangladesh" target="_blank" rel="noreferrer" className="group flex flex-col items-center gap-1 hover:text-[#f525bd] transition-colors">
-              <Instagram className="w-6 h-6" />
-              <span className="text-[10px] font-bold tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity">Instagram</span>
-            </a>
+          {/* COL 2: HELP */}
+          <div>
+            <h3 className="text-base font-bold uppercase tracking-widest mb-6">Help & Support</h3>
+            <ul className="space-y-3 text-sm text-gray-300">
+              <li><Link href="#" onClick={handleComingSoon} className="hover:text-[#f525bd] transition duration-300">Shipping & Delivery</Link></li>
+              <li><Link href="#" onClick={handleComingSoon} className="hover:text-[#f525bd] transition duration-300">Returns & Exchanges</Link></li>
+              
+              {/* WORKING LINK */}
+              <li><Link href="/contact" className="hover:text-[#f525bd] transition duration-300">Contact Us</Link></li>
 
-            <a href="https://wa.me/8801716938156" target="_blank" rel="noreferrer" className="group flex flex-col items-center gap-1 hover:text-[#f525bd] transition-colors">
-              <MessageCircle className="w-6 h-6" />
-              <span className="text-[10px] font-bold tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity">WhatsApp</span>
-            </a>
+              <li><Link href="#" onClick={handleComingSoon} className="hover:text-[#f525bd] transition duration-300">FAQs</Link></li>
+              
+              {/* WORKING LINK */}
+              <li>
+                  <Link href="/order-success" className="flex items-center gap-2 hover:text-[#f525bd] transition duration-300 font-medium">
+                      Track Your Order
+                  </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* COL 3: SHOP */}
+          <div>
+            <h3 className="text-base font-bold uppercase tracking-widest mb-6">Shop Collection</h3>
+            <ul className="space-y-3 text-sm text-gray-300">
+              <li><Link href="/products/men" className="hover:text-[#f525bd] transition duration-300">Men's Fragrance</Link></li>
+              <li><Link href="/products/women" className="hover:text-[#f525bd] transition duration-300">Women's Fragrance</Link></li>
+              <li><Link href="/products/unisex" className="hover:text-[#f525bd] transition duration-300">Unisex Collection</Link></li>
+              <li><Link href="/products/car-perfume" className="hover:text-[#f525bd] transition duration-300">Car Perfumes</Link></li>
+              <li><Link href="/products/all" className="hover:text-[#f525bd] transition duration-300">New Arrivals</Link></li>
+            </ul>
+          </div>
+
+          {/* COL 4: NEWSLETTER & SIGN UP */}
+          <div className="lg:pl-8">
+            <h2 className="font-serif text-3xl md:text-4xl leading-tight mb-4 text-white">
+              We Provide <span className="italic text-[#f525bd]">100% Authentic</span> Perfumes
+            </h2>
+            <p className="text-gray-400 text-sm mb-6">
+              Sign up for Perfume Box emails and get the first look at new arrivals and exclusive offers.
+            </p>
+            
+            <form className="flex flex-col gap-3" onSubmit={(e) => e.preventDefault()}>
+              
+              {/* UPDATED BUTTON: Opens the Auth Modal */}
+              <button 
+                  onClick={handleSignUpClick}
+                  className="bg-transparent border border-white text-white px-6 py-3 rounded-md font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300"
+              >
+                {user ? "My Profile" : "Sign Up"}
+              </button>
+            </form>
           </div>
 
         </div>
-      </div>
-    </footer>
+
+        {/* 3. BOTTOM BAR */}
+        <div className="bg-gray-900 border-t border-gray-800">
+          <div className="max-w-[1400px] mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-8">
+            
+            <div className="flex flex-col md:flex-row items-center gap-6">
+              <img 
+                src="/logo.jpg" 
+                alt="Perfume Box Logo" 
+                className="w-14 h-14 rounded-full object-cover border border-gray-700 shadow-sm opacity-90 hover:opacity-100 transition-opacity"
+              />
+              <div className="text-xs text-gray-500 text-center md:text-left">
+                <p>© {year} Perfume Box Bangladesh. All rights reserved.</p>
+                <p className="mt-1 opacity-75">100% Authentic Products. Sourced from Dubai, USA & UK.</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-8">
+              <a href="https://www.facebook.com/profile.php?id=61561883782700" target="_blank" rel="noreferrer" className="group flex flex-col items-center gap-1 hover:text-[#f525bd] transition-colors">
+                <Facebook className="w-6 h-6" />
+                <span className="text-[10px] font-bold tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity">Facebook</span>
+              </a>
+
+              <a href="https://www.instagram.com/perfumeboxbangladesh" target="_blank" rel="noreferrer" className="group flex flex-col items-center gap-1 hover:text-[#f525bd] transition-colors">
+                <Instagram className="w-6 h-6" />
+                <span className="text-[10px] font-bold tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity">Instagram</span>
+              </a>
+
+              <a href="https://wa.me/8801716938156" target="_blank" rel="noreferrer" className="group flex flex-col items-center gap-1 hover:text-[#f525bd] transition-colors">
+                <MessageCircle className="w-6 h-6" />
+                <span className="text-[10px] font-bold tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity">WhatsApp</span>
+              </a>
+            </div>
+
+          </div>
+        </div>
+      </footer>
+    </>
   );
 }

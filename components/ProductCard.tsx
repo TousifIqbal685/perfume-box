@@ -1,11 +1,12 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image"; // Import Image
+import { useRouter } from "next/navigation"; // 1. Import useRouter
+import Image from "next/image"; 
 import { useCart } from "@/context/CartContext"; 
 import { useState } from "react";
 
 export default function ProductCard({ product }: { product: any }) {
+  const router = useRouter(); // 2. Initialize router
   const { addToCart, openCart } = useCart(); 
   
   const [selectedSize, setSelectedSize] = useState<"full" | "5ml" | "10ml">("full");
@@ -49,10 +50,16 @@ export default function ProductCard({ product }: { product: any }) {
     e.stopPropagation();
   };
 
+  // 3. Navigation Handler
+  const handleCardClick = () => {
+    router.push(`/product/${product.slug}`);
+  };
+
   return (
-    <Link 
-      href={`/product/${product.slug}`} 
-      className="group block bg-white rounded-md overflow-hidden hover:shadow-xl transition-all duration-300 relative"
+    // 4. Changed Link to div + added onClick
+    <div 
+      onClick={handleCardClick}
+      className="group block bg-white rounded-md overflow-hidden hover:shadow-xl transition-all duration-300 relative cursor-pointer"
     >
       
       {/* IMAGE CONTAINER OPTIMIZED */}
@@ -122,6 +129,6 @@ export default function ProductCard({ product }: { product: any }) {
           )}
         </div>
       </div>
-    </Link>
+    </div>
   );
 }

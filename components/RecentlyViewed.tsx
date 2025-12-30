@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation"; // 1. Import Router
+import Image from "next/image"; // 2. Import Next Image
 import { useCart } from "@/context/CartContext"; 
-import { supabase } from "@/supabaseClient"; // Import Supabase
+import { supabase } from "@/supabaseClient";
 
 export default function RecentlyViewed() {
+  const router = useRouter(); // 3. Init Router
   const [products, setProducts] = useState<any[]>([]);
   const [mounted, setMounted] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -22,23 +24,18 @@ export default function RecentlyViewed() {
         const localIds = localItems.map((item: any) => item.id);
 
         if (localIds.length > 0) {
-          // 1. Fetch only products that still exist in DB
           const { data: validProducts } = await supabase
             .from("products")
-            .select("id, title, brand, price, discounted_price, main_image_url, slug, volume_ml, price_5ml, price_10ml") // Added decant pricing fields
+            .select("id, title, brand, price, discounted_price, main_image_url, slug, volume_ml, price_5ml, price_10ml")
             .in("id", localIds)
-            .eq("is_visible", true); // Optional: also hide if not visible
+            .eq("is_visible", true);
 
           if (validProducts) {
-            // 2. Sort them to match the order in localStorage (most recent first)
-            // validProducts comes back in random order from DB
             const sortedValid = localItems
               .filter((localItem: any) => validProducts.find((vp) => vp.id === localItem.id))
               .map((localItem: any) => validProducts.find((vp) => vp.id === localItem.id));
 
             setProducts(sortedValid);
-            
-            // 3. Update localStorage to remove dead items
             localStorage.setItem("recentlyViewed", JSON.stringify(sortedValid));
           }
         }
@@ -75,6 +72,11 @@ export default function RecentlyViewed() {
     openCart();
   };
 
+  // 4. Navigation Handler
+  const handleProductClick = (slug: string) => {
+    router.push(`/product/${slug}`);
+  };
+
   if (!mounted || products.length === 0) return null;
 
   return (
@@ -97,16 +99,19 @@ export default function RecentlyViewed() {
             className="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth pb-4 px-2"
           >
             {products.map((item: any) => (
-              <Link 
+              <div 
                 key={item.id} 
-                href={`/product/${item.slug}`} 
-                className="group/card block w-[160px] md:w-[190px] flex-shrink-0"
+                onClick={() => handleProductClick(item.slug)} // 5. Click handler instead of Link
+                className="group/card block w-[160px] md:w-[190px] flex-shrink-0 cursor-pointer"
               >
                 <div className="bg-[#f8f8f8] aspect-[4/5] w-full flex items-center justify-center mb-4 relative overflow-hidden rounded-sm">
-                  <img 
+                  {/* 6. Use Next Image */}
+                  <Image
                     src={item.main_image_url} 
                     alt={item.title} 
-                    className="h-[80%] w-auto object-contain mix-blend-multiply transition-transform duration-500 group-hover/card:scale-105"
+                    fill
+                    sizes="(max-width: 768px) 50vw, 20vw"
+                    className="object-contain mix-blend-multiply transition-transform duration-500 group-hover/card:scale-105 p-2"
                   />
                   
                    <button
@@ -125,7 +130,7 @@ export default function RecentlyViewed() {
                   </h3>
                   <p className="text-sm font-medium text-gray-900 mt-1">৳ {item.price.toLocaleString()}</p>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
 

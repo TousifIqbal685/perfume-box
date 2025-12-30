@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image"; // 1. Import Image
 import AddToCart from "@/components/AddToCart";
 
 export default function ProductClient({ product, price: initialPrice, relatedProducts }: any) {
@@ -31,13 +32,10 @@ export default function ProductClient({ product, price: initialPrice, relatedPro
   // --- CRITICAL FIX: GENERATE UNIQUE CART ITEM ---
   const productForCart = {
     ...product,
-    // 1. UNIQUE ID: Appends size to ID if it's a decant (e.g. "123-5ml")
     id: selectedSize === "full" ? product.id : `${product.id}-${selectedSize}`,
-    // 2. UNIQUE TITLE: Appends size text so user sees what they bought
     title: selectedSize === "full" 
       ? product.title 
       : `${product.title} (${selectedSize} Decant)`,
-    // 3. ACTIVE PRICE
     price: activePrice, 
   };
   // ------------------------------------------------------------------
@@ -87,11 +85,15 @@ export default function ProductClient({ product, price: initialPrice, relatedPro
 
           {/* LEFT — IMAGES */}
           <div className="lg:col-span-5">
-            <div className="w-full bg-[#f8f8f8] rounded-sm flex items-center justify-center p-4 aspect-[4/5] lg:h-[420px] cursor-zoom-in">
-              <img
+            <div className="w-full bg-[#f8f8f8] rounded-sm flex items-center justify-center p-4 aspect-[4/5] lg:h-[420px] cursor-zoom-in relative overflow-hidden">
+              {/* 2. Replaced main <img> with <Image> */}
+              <Image
                 src={currentImage}
                 alt={product.title}
-                className="h-full w-auto object-contain mix-blend-multiply drop-shadow-md"
+                fill
+                priority
+                className="object-contain mix-blend-multiply drop-shadow-md p-4"
+                sizes="(max-width: 768px) 100vw, 50vw"
               />
             </div>
             {images.length > 1 && (
@@ -100,10 +102,16 @@ export default function ProductClient({ product, price: initialPrice, relatedPro
                   <button
                     key={i}
                     onClick={() => setCurrentImage(img)}
-                    className={`shrink-0 w-14 h-14 bg-[#f8f8f8] border transition-all duration-300 
+                    className={`shrink-0 w-14 h-14 bg-[#f8f8f8] border transition-all duration-300 relative 
                       ${img === currentImage ? "border-black ring-1 ring-black" : "border-transparent hover:border-gray-300"}`}
                   >
-                    <img src={img} className="w-full h-full object-contain p-1 mix-blend-multiply" />
+                    {/* 3. Replaced Thumbnail <img> with <Image> */}
+                    <Image 
+                        src={img} 
+                        alt="Thumbnail"
+                        fill
+                        className="object-contain p-1 mix-blend-multiply" 
+                    />
                   </button>
                 ))}
               </div>
@@ -222,6 +230,7 @@ export default function ProductClient({ product, price: initialPrice, relatedPro
                 {relatedProducts.map((item: any) => (
                   <Link key={item.id} href={`/product/${item.slug}`} className="group/card block w-[150px] md:w-[170px] flex-shrink-0">
                     <div className="bg-[#f8f8f8] aspect-[4/5] w-full flex items-center justify-center mb-3 relative overflow-hidden rounded-sm">
+                        {/* 4. OPTIONAL: You can replace this img with Image too if you want Related Products masked */}
                       <img src={item.main_image_url} alt={item.title} className="h-[80%] w-auto object-contain mix-blend-multiply transition-transform duration-500 group-hover/card:scale-105"/>
                     </div>
                     <div className="text-center space-y-0.5">
